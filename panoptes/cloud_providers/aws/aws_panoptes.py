@@ -1,5 +1,6 @@
 import boto3
 import cloud_providers.aws
+from pprint import pprint
 
 
 class AWSWhitelist:
@@ -7,7 +8,7 @@ class AWSWhitelist:
         safe_ips = []
         safe_ips += self.get_vpc_ranges(aws_client)
         safe_ips += self.get_subnet_ranges(aws_client)
-        safe_ips += self.get_running_instances_ips(aws_client)
+        safe_ips += self.get_instances_ips(aws_client)
         safe_ips += self.get_elastic_ips(aws_client)
         self.safe_ips = safe_ips
 
@@ -25,8 +26,21 @@ class AWSWhitelist:
         ]
         return subnet_ranges
 
-    def get_running_instances_ips(self, aws_client):
-        return []
+    def get_instances_ips(self, aws_client):
+        ec2 = aws_client.client('ec2')
+        boto_instances = ec2.describe_instances()
+        instances_ips = []
+        for instance in boto_instances['Reservations']:
+            instance_network = instance['Instances'][0]['NetworkInterfaces'][0]
+            for net_interface in instance_network['PrivateIpAddresses']:
+                instances_ips.append(
+                    net_interface['PrivateIpAddress']
+                )
+                if 'Association' in net_interface.keys():
+                    instances_ips.append(
+                        net_interface['Association']['PublicIp']
+                    )
+        return instances_ips
 
     def get_elastic_ips(self, aws_client):
         return []
@@ -39,7 +53,7 @@ def analyze_security_groups(aws_client, whitelist):
     aws_whitelist = AWSWhitelist(aws_client)
     whitelist += aws_whitelist.safe_ips
 
-    print(whitelist)
+    pprint(whitelist)
     return None
 
 
