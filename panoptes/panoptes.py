@@ -18,12 +18,34 @@ def cli():
     default='default',
     help='AWS CLI profile to check'
 )
-def aws_command(region, profile):
+@click.option(
+    '--whitelist',
+    help='Whitelist to declare safe IPs'
+)
+def aws_command(region, profile, whitelist=None):
+    if whitelist is not None:
+        whitelist = read_whitelist_file(whitelist)
+
     aws_authentication = cloud_authentication.aws.get_client(
         region=region,
         profile=profile,
     )
-    print(aws_authentication)
+
+    if aws_authentication["Error"] is not None:
+        print(aws_authetication["Error"])
+    else:
+        aws_client = aws_authentication["Client"]
+        cloud_providers.aws.aws_panoptes.analyze_security_groups(
+            aws_client,
+            whitelist,
+        )
+    return None
+
+
+def read_whitelist_file(whitelist):
+    with open(whitelist, 'r') as whitelist_file:
+        whitelist = [line.replace('\n', '') for line in whitelist_file]
+    return whitelist
 
 
 if __name__ == "__main__":
