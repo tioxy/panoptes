@@ -12,10 +12,18 @@ class AWSWhitelist:
         self.safe_ips = safe_ips
 
     def get_vpc_ranges(self, aws_client):
-        return []
+        ec2 = aws_client.client('ec2')
+        boto_vpcs = ec2.describe_vpcs()
+        vpc_ranges = [vpc['CidrBlock'] for vpc in boto_vpcs['Vpcs']]
+        return vpc_ranges
 
     def get_subnet_ranges(self, aws_client):
-        return []
+        ec2 = aws_client.client('ec2')
+        boto_subnets = ec2.describe_subnets()
+        subnet_ranges = [
+            subnet['CidrBlock'] for subnet in boto_subnets['Subnets']
+        ]
+        return subnet_ranges
 
     def get_running_instances_ips(self, aws_client):
         return []
