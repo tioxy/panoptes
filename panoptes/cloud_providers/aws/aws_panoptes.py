@@ -15,7 +15,10 @@ class AWSWhitelist:
     def get_vpc_ranges(self, aws_client):
         ec2 = aws_client.client('ec2')
         boto_vpcs = ec2.describe_vpcs()
-        vpc_ranges = [vpc['CidrBlock'] for vpc in boto_vpcs['Vpcs']]
+        vpc_ranges = [
+            vpc['CidrBlock'] for vpc in boto_vpcs['Vpcs']
+        ]
+        vpc_ranges = list(set(vpc_ranges))
         return vpc_ranges
 
     def get_subnet_ranges(self, aws_client):
@@ -24,22 +27,29 @@ class AWSWhitelist:
         subnet_ranges = [
             subnet['CidrBlock'] for subnet in boto_subnets['Subnets']
         ]
+        subnet_ranges = list(set(subnet_ranges))
         return subnet_ranges
 
     def get_instances_ips(self, aws_client):
         ec2 = aws_client.client('ec2')
         boto_instances = ec2.describe_instances()
         instances_ips = []
-        for instance in boto_instances['Reservations']:
-            instance_network = instance['Instances'][0]['NetworkInterfaces'][0]
-            for net_interface in instance_network['PrivateIpAddresses']:
-                instances_ips.append(
-                    net_interface['PrivateIpAddress']
-                )
-                if 'Association' in net_interface.keys():
-                    instances_ips.append(
-                        net_interface['Association']['PublicIp']
-                    )
+        for instance_json in boto_instances['Reservations']:
+            for instance in instance_json['Instances']:
+                for instance_network in instance['NetworkInterfaces']:
+                    if 'Association' in instance_network.keys():
+                        instances_ips.append(instance_network['Association']['PublicIp'] + '/32')
+
+                    if 'PrivateIpAddress' in instance_network.keys():
+                        instances_ips.append(instance_network['PrivateIpAddress'] + '/32')
+
+                    if 'PrivateIpAddresses' in instance_network.keys():
+                        for private_ip in instance_network['PrivateIpAddresses']:
+                            if 'Association' in private_ip.keys():
+                                instances_ips.append(private_ip['Association']['PublicIp'] + '/32')
+                            if 'PrivateIpAddress' in private_ip.keys():
+                                instances_ips.append(private_ip['PrivateIpAddress'] + '/32')
+        instances_ips = list(set(instances_ips))
         return instances_ips
 
     def get_elastic_ips(self, aws_client):
