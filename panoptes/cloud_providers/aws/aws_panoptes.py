@@ -70,12 +70,12 @@ class AWSWhitelist:
         return elastic_ips
 
 
-def analyze_security_groups(aws_client, whitelist):
-    if whitelist is None:
-        whitelist = []
+def analyze_security_groups(aws_client, whitelist_file=None):
+    if whitelist_file is None:
+        whitelist_file = []
 
     aws_whitelist = AWSWhitelist(aws_client)
-    whitelist += aws_whitelist.safe_ips
+    whitelist = whitelist_file + aws_whitelist.safe_ips
 
     pprint(whitelist)
     return None
