@@ -71,6 +71,34 @@ class AWSWhitelist:
 
 
 def analyze_security_groups(aws_client, whitelist_file=None):
+    analyze_response_analysis = {
+        "SecurityGroups": {
+            "UnusedByInstances": [
+                {
+                    "Name": "text",
+                    "GroupId": "text",
+                    "Description": "text",
+                    "VpcId": "text",
+                }
+            ],
+            "UnsafeGroups": [
+                {
+                    "GroupName": "text",
+                    "GroupId": "text",
+                    "Description": "text",
+                    "UnsafePorts": [
+                        {
+                            "FromPort": str,
+                            "ToPort": str,
+                            "IpProtocol": str,
+                            "CidrIp": str,
+                        },
+                    ]
+                },
+            ],
+        }
+    }
+
     if whitelist_file is None:
         whitelist_file = []
 
@@ -78,6 +106,14 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     whitelist = whitelist_file + aws_whitelist.safe_ips
 
     pprint(whitelist)
+    return None
+
+
+def remove_unused_security_groups():
+    return None
+
+
+def remove_unsafe_security_groups():
     return None
 
 

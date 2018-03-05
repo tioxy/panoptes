@@ -22,7 +22,12 @@ def cli():
     '--whitelist',
     help='Whitelist to declare safe IPs'
 )
-def aws_command(region, profile, whitelist=None):
+@click.option(
+    '--output',
+    default='json',
+    help='Which kind of output you want the analysis'
+)
+def aws_command(region, profile, output, whitelist=None):
     if whitelist is None:
         whitelist_file = None
     else:
