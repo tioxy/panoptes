@@ -75,17 +75,17 @@ def analyze_security_groups(aws_client, whitelist_file=None):
         "SecurityGroups": {
             "UnusedByInstances": [
                 {
-                    "Name": "text",
-                    "GroupId": "text",
-                    "Description": "text",
-                    "VpcId": "text",
+                    "Name": str,
+                    "GroupId": str,
+                    "Description": str,
+                    "VpcId": str,
                 }
             ],
             "UnsafeGroups": [
                 {
-                    "GroupName": "text",
-                    "GroupId": "text",
-                    "Description": "text",
+                    "GroupName": str,
+                    "GroupId": str,
+                    "Description": str,
                     "UnsafePorts": [
                         {
                             "FromPort": str,
