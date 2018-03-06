@@ -48,15 +48,15 @@ def gcp():
     metavar='<profile_name>'
 )
 @click.option(
-    '--whitelist',
-    help='Whitelist to declare safe IPs',
-    metavar='<path>'
-)
-@click.option(
     '--output',
     default='json',
     help='Which kind of output you want the analysis',
     metavar='<json/yml>'
+)
+@click.option(
+    '--whitelist',
+    help='Whitelist with declared safe IPs and CIDR',
+    metavar='<path>'
 )
 def aws_analyze_command(region, profile, output, whitelist=None):
     if whitelist is None:
