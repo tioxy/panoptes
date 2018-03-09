@@ -1,6 +1,7 @@
 import click
 import cloud_authentication
 import cloud_providers
+from pprint import pprint
 
 
 @click.group()
@@ -73,10 +74,12 @@ def aws_analyze_command(region, profile, output, whitelist=None):
         print(aws_authetication["Error"])
     else:
         aws_client = aws_authentication["Client"]
-        cloud_providers.aws.aws_panoptes.analyze_security_groups(
+        analysis = cloud_providers.aws.aws_panoptes.analyze_security_groups(
             aws_client,
             whitelist_file,
         )
+        pprint(analysis)
+
     return None
 
 

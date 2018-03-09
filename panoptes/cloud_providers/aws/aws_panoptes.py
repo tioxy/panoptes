@@ -1,6 +1,5 @@
 import boto3
 import cloud_providers.aws
-from pprint import pprint
 
 
 class AWSAnalysis:
@@ -95,6 +94,13 @@ class AWSWhitelist:
 
 
 def analyze_security_groups(aws_client, whitelist_file=None):
+    response = {
+        'SecurityGroups': {
+            'UnusedByInstances': [],
+            'UnsafeGroups': [],
+        }
+    }
+
     if whitelist_file is None:
         whitelist_file = []
 
@@ -102,11 +108,31 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     whitelist = whitelist_file + aws_whitelist.safe_ips
 
     analysis = AWSAnalysis()
-    security_groups_by_service = {
+    secgroup_services = {
         "ec2": analysis.get_ec2_attached_security_groups(aws_client),
         "rds": analysis.get_rds_attached_security_groups(aws_client),
     }
-    pprint(security_groups_by_service)
+    all_attached_groups = []
+    for secgroup_services, attached_groups in secgroup_services.items():
+        all_attached_groups += attached_groups
+
+    ec2 = aws_client.client('ec2')
+    all_security_groups = ec2.describe_security_groups()['SecurityGroups']
+    for security_group in all_security_groups:
+        # Validating if group is unused
+        if security_group['GroupId'] not in all_attached_groups:
+            if 'VpcId' not in security_group.keys():
+                vpc_id = 'no-vpc'
+            else:
+                vpc_id = security_group['VpcId']
+            unused_group = {
+                'GroupName': security_group['GroupName'],
+                'GroupId': security_group['GroupId'],
+                'Description': security_group['Description'],
+                'VpcId': vpc_id,
+            }
+            response['SecurityGroups']['UnusedByInstances'].append(unused_group)
+    return response
 
 
 if __name__ == "__main__":
