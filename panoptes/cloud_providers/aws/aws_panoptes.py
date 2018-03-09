@@ -18,8 +18,16 @@ class AWSAnalysis:
         return list(set(ec2_attached_groups))
 
     def get_rds_attached_security_groups(self, aws_client):
-        return None
-        
+        rds_attached_groups = []
+        rds = aws_client.client('rds')
+        boto_rds_instances = rds.describe_db_instances()
+        for db_instance_json in boto_rds_instances['DBInstances']:
+            for security_group in db_instance_json['VpcSecurityGroups']:
+                rds_attached_groups.append(
+                    security_group['VpcSecurityGroupId']
+                )
+        return list(set(rds_attached_groups))
+
 
 class AWSWhitelist:
     def __init__(self, aws_client):
@@ -90,14 +98,15 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     if whitelist_file is None:
         whitelist_file = []
 
-    analysis = AWSAnalysis()
     aws_whitelist = AWSWhitelist(aws_client)
     whitelist = whitelist_file + aws_whitelist.safe_ips
-    all_sec_groups = {
-        "ec2" : analysis.get_ec2_attached_security_groups(aws_client),
-        "rds" : analysis.get_rds_attached_security_groups(aws_client),
+
+    analysis = AWSAnalysis()
+    security_groups_by_service = {
+        "ec2": analysis.get_ec2_attached_security_groups(aws_client),
+        "rds": analysis.get_rds_attached_security_groups(aws_client),
     }
-    pprint(all_sec_groups)
+    pprint(security_groups_by_service)
 
 
 if __name__ == "__main__":
