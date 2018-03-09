@@ -1,6 +1,7 @@
 import click
 import cloud_authentication
 import cloud_providers
+import output
 from pprint import pprint
 
 
@@ -50,9 +51,9 @@ def gcp():
 )
 @click.option(
     '--output',
-    default='json',
+    default='print',
     help='Which kind of output you want the analysis',
-    metavar='<json/yml>'
+    metavar='<print/json/yml>'
 )
 @click.option(
     '--whitelist',
