@@ -3,6 +3,24 @@ import cloud_providers.aws
 from pprint import pprint
 
 
+class AWSAnalysis:
+    def __init__(self):
+        None
+
+    def get_ec2_attached_security_groups(self, aws_client):
+        ec2_attached_groups = []
+        ec2 = aws_client.client('ec2')
+        boto_ec2_instances = ec2.describe_instances()
+        for instance_json in boto_ec2_instances['Reservations']:
+            for instance in instance_json['Instances']:
+                for security_group in instance['SecurityGroups']:
+                    ec2_attached_groups.append(security_group['GroupId'])
+        return list(set(ec2_attached_groups))
+
+    def get_rds_attached_security_groups(self, aws_client):
+        return None
+        
+
 class AWSWhitelist:
     def __init__(self, aws_client):
         self.safe_ips = list(set(self.get_vpc_ranges(aws_client)
@@ -42,14 +60,14 @@ class AWSWhitelist:
                             instance_net['PrivateIpAddress'] + '/32'
                         )
                     if 'PrivateIpAddresses' in instance_net.keys():
-                        for private_ip in instance_net['PrivateIpAddresses']:
-                            if 'Association' in private_ip.keys():
+                        for priv_ip in instance_net['PrivateIpAddresses']:
+                            if 'Association' in priv_ip.keys():
                                 vpc_instances_ips.append(
-                                    private_ip['Association']['PublicIp'] + '/32'
+                                    priv_ip['Association']['PublicIp'] + '/32'
                                 )
-                            if 'PrivateIpAddress' in private_ip.keys():
+                            if 'PrivateIpAddress' in priv_ip.keys():
                                 vpc_instances_ips.append(
-                                    private_ip['PrivateIpAddress'] + '/32'
+                                    priv_ip['PrivateIpAddress'] + '/32'
                                 )
         return vpc_instances_ips
 
@@ -69,11 +87,26 @@ class AWSWhitelist:
 
 
 def analyze_security_groups(aws_client, whitelist_file=None):
+    if whitelist_file is None:
+        whitelist_file = []
+
+    analysis = AWSAnalysis()
+    aws_whitelist = AWSWhitelist(aws_client)
+    whitelist = whitelist_file + aws_whitelist.safe_ips
+    all_sec_groups = {
+        "ec2" : analysis.get_ec2_attached_security_groups(aws_client),
+        "rds" : analysis.get_rds_attached_security_groups(aws_client),
+    }
+    pprint(all_sec_groups)
+
+
+if __name__ == "__main__":
+    """
     analyze_response_analysis = {
         "SecurityGroups": {
             "UnusedByInstances": [
                 {
-                    "Name": str,
+                    "GroupName": str,
                     "GroupId": str,
                     "Description": str,
                     "VpcId": str,
@@ -96,24 +129,5 @@ def analyze_security_groups(aws_client, whitelist_file=None):
             ],
         }
     }
-
-    if whitelist_file is None:
-        whitelist_file = []
-
-    aws_whitelist = AWSWhitelist(aws_client)
-    whitelist = whitelist_file + aws_whitelist.safe_ips
-
-    pprint(whitelist)
-    return None
-
-
-def remove_unused_security_groups():
-    return None
-
-
-def remove_unsafe_security_groups():
-    return None
-
-
-if __name__ == "__main__":
+    """
     None
