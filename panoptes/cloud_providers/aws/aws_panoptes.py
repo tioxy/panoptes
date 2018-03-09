@@ -5,12 +5,10 @@ from pprint import pprint
 
 class AWSWhitelist:
     def __init__(self, aws_client):
-        safe_ips = []
-        safe_ips += self.get_vpc_ranges(aws_client)
-        safe_ips += self.get_subnet_ranges(aws_client)
-        safe_ips += self.get_vpc_instances_ips(aws_client)
-        safe_ips += self.get_elastic_ips(aws_client)
-        self.safe_ips = list(set(safe_ips))
+        self.safe_ips = list(set(self.get_vpc_ranges(aws_client)
+                                 + self.get_subnet_ranges(aws_client)
+                                 + self.get_vpc_instances_ips(aws_client)
+                                 + self.get_elastic_ips(aws_client)))
 
     def get_vpc_ranges(self, aws_client):
         ec2 = aws_client.client('ec2')
