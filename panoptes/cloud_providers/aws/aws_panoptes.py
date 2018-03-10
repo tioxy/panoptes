@@ -27,6 +27,11 @@ class AWSAnalysis:
                 )
         return list(set(rds_attached_groups))
 
+    def get_all_security_groups(self, aws_client):
+        ec2 = aws_client.client('ec2')
+        all_security_groups = ec2.describe_security_groups()['SecurityGroups']
+        return all_security_groups
+
 
 class AWSWhitelist:
     def __init__(self, aws_client):
@@ -116,8 +121,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     for secgroup_services, attached_groups in secgroup_services.items():
         all_attached_groups += attached_groups
 
-    ec2 = aws_client.client('ec2')
-    all_security_groups = ec2.describe_security_groups()['SecurityGroups']
+    all_security_groups = analysis.get_all_security_groups(aws_client)
     for security_group in all_security_groups:
         # Validating if group is unused
         if security_group['GroupId'] not in all_attached_groups:
