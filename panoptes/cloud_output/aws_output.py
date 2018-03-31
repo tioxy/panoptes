@@ -9,7 +9,12 @@ def output_json(analysis):
 
 
 def output_yml(analysis):
-    print("YML")
+    output = yaml.dump(
+        analysis,
+        default_flow_style=False,
+        allow_unicode=True,
+    )
+    print(output)
     return None
 
 
