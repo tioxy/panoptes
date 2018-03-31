@@ -2,4 +2,4 @@ __all__ = [
     "aws",
 ]
 
-from cloud_authentication import *
+from panoptes.cloud_authentication import *

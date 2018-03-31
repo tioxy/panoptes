@@ -2,4 +2,4 @@ __all__ = [
     "aws_output",
 ]
 
-from cloud_output import *
+from panoptes.cloud_output import *

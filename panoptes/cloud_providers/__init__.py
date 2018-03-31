@@ -2,4 +2,4 @@ __all__ = [
     "aws",
 ]
 
-from cloud_providers import *
+from panoptes.cloud_providers import *

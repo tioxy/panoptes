@@ -1,5 +1,4 @@
 import boto3
-import cloud_providers.aws
 
 
 class AWSAnalysis:
