@@ -1,18 +1,21 @@
 from distutils.core import setup
+from setuptools import find_packages
 
-with open('requirements.txt') as requirements_file:
-    install_requirements = requirements_file.read().splitlines()
 
 setup(
-    name='Panoptes',
+    name='panoptes',
     version='0.1.0',
     author='Gabriel Tiossi',
     author_email='gabrieltiossi@gmail.com',
-    packages=['panoptes'],
+    packages=find_packages(),
     scripts=['panoptesctl'],
-    url='http://pypi.python.org/pypi/PanoptesCloud/',
+    url='http://pypi.python.org/pypi/panoptes/',
     license='LICENSE',
     description='The multi cloud security group analyzer.',
-    long_description=open('README.txt').read(),
-    install_requires=install_requirements,
+    long_description='https://github.com/tioxy/panoptes',
+    install_requires=[
+        'click==6.7',
+        'boto3==1.6.21',
+        'PyYAML==3.12',
+    ],
 )
