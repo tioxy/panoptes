@@ -58,13 +58,28 @@ class AWSAnalysis:
         }
         return unused_group
 
-    def generate_unsafe_ingress_entry(self, ingress_entry):
-        unsafe_ingress = {
-            "FromPort": str,
-            "ToPort": str,
-            "IpProtocol": str,
-            "CidrIp": str,
+    def generate_unsafe_security_group_entry(
+        self,
+        security_group,
+        unsafe_ingress_entries
+    ):
+        unsafe_group = {
+            "GroupName": security_group['GroupName'],
+            "GroupId": security_group['GroupId'],
+            "Description": security_group['Description'],
+            "UnsafePorts": unsafe_ingress_entries,
         }
+        return unsafe_group
+
+    def generate_unsafe_ingress_entry(self, ingress_entry, unsafe_ip):
+        unsafe_ingress = {
+            "IpProtocol": ingress_entry["IpProtocol"],
+            "CidrIp": unsafe_ip,
+        }
+        if "FromPort" in ingress_entry.keys():
+            unsafe_ingress["FromPort"] = ingress_entry["FromPort"]
+        if "ToPort" in ingress_entry.keys():
+            unsafe_ingress["ToPort"] = ingress_entry["ToPort"]
         return unsafe_ingress
 
 
@@ -162,7 +177,28 @@ def analyze_security_groups(aws_client, whitelist_file=None):
         # Validating if group is unused
         if security_group['GroupId'] not in all_attached_groups:
             response['SecurityGroups']['UnusedByInstances'].append(
-                analysis.generate_unused_security_group_entry(security_group)
+                analysis.generate_unused_security_group_entry(
+                    security_group=security_group
+                )
+            )
+
+        # Validating if group is unsafe
+        unsafe_ingress_entries = []
+        for ingress_entry in security_group["IpPermissions"]:
+            for allowed_ip in ingress_entry["IpRanges"]:
+                if allowed_ip['CidrIp'] not in whitelist:
+                    unsafe_ingress_entries.append(
+                        analysis.generate_unsafe_ingress_entry(
+                            ingress_entry=ingress_entry,
+                            unsafe_ip=allowed_ip['CidrIp'],
+                        )
+                    )
+        if len(unsafe_ingress_entries) > 0:
+            response['SecurityGroups']['UnsafeGroups'].append(
+                analysis.generate_unsafe_security_group_entry(
+                    security_group=security_group,
+                    unsafe_ingress_entries=unsafe_ingress_entries,
+                )
             )
     return response
 
