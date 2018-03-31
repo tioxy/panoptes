@@ -1,15 +1,24 @@
 import click
 import cloud_authentication
 import cloud_providers
-import output
-from pprint import pprint
+import cloud_output
+
+
+def generate_analysis_output(analysis, output):
+    output_options = {
+        "json": cloud_output.aws_output.output_json,
+        "yml": cloud_output.aws_output.output_yml,
+        "print": cloud_output.aws_output.output_print,
+    }
+    output_options[output](analysis=analysis)
+    return None
 
 
 @click.group()
 def cli():
     """Welcome to Panoptes - The multi cloud security group analyzer
 
-    This project is stored at GitHub and open sourced under the Apache 2.0 License.
+    This project is stored on GitHub and open sourced under Apache 2.0
 
     To start using it, read the docs at:
     https://github.com/tioxy/panoptes
@@ -53,7 +62,7 @@ def gcp():
     '--output',
     default='print',
     help='Which kind of output you want the analysis',
-    metavar='<print/json/yml>'
+    type=click.Choice(['print', 'json', 'yml']),
 )
 @click.option(
     '--whitelist',
@@ -79,8 +88,10 @@ def aws_analyze_command(region, profile, output, whitelist=None):
             aws_client,
             whitelist_file,
         )
-        pprint(analysis)
-
+        generate_analysis_output(
+            analysis=analysis,
+            output=output,
+        )
     return None
 
 
