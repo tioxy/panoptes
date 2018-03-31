@@ -11,4 +11,4 @@ Analyze your security groups and see any kinds of breaches.
 - Elastic IP's
 
 ##### Limitations
-The Automatic AWS Whitelist feature can't neither whitelist *public* nor *private* IP's from **EC2 Classic**, so make sure that those instances have an *Elastic IP* attached and their security groups are pointing to the new *Elastic IP* attached instead of the default EC2 Classic ones.
+The Automatic AWS Whitelist feature can't whitelist *public* and *private* IP's from **EC2 Classic**, so make sure that those instances have an *Elastic IP* attached and their security groups are pointing to the new *Elastic IP* attached instead of the default EC2 Classic ones.
