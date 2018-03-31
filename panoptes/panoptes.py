@@ -97,7 +97,7 @@ def aws_analyze_command(region, profile, output, whitelist=None):
 
 def read_whitelist_file(whitelist):
     with open(whitelist, 'r') as whitelist_file:
-        whitelist = [line.replace('\n', '') for line in whitelist_file]
+        whitelist = whitelist_file.read().splitlines()
     return whitelist
 
 
