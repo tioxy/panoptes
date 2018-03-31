@@ -4,7 +4,12 @@ from pprint import pprint
 
 
 def output_json(analysis):
-    print("JSON")
+    output = json.dumps(
+        analysis,
+        indent=4,
+        sort_keys=True
+    )
+    print(output)
     return None
 
 
