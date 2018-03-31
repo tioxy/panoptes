@@ -1,7 +1,7 @@
 __all__ = [
     "cloud_authentication",
     "cloud_providers",
-    "output",
+    "cloud_output",
 ]
 
 from panoptes import *
