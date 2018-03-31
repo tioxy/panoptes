@@ -45,6 +45,28 @@ class AWSAnalysis:
         all_security_groups = ec2.describe_security_groups()['SecurityGroups']
         return all_security_groups
 
+    def generate_unused_security_group_entry(self, security_group):
+        if 'VpcId' not in security_group.keys():
+            vpc_id = 'no-vpc'
+        else:
+            vpc_id = security_group['VpcId']
+        unused_group = {
+            'GroupName': security_group['GroupName'],
+            'GroupId': security_group['GroupId'],
+            'Description': security_group['Description'],
+            'VpcId': vpc_id,
+        }
+        return unused_group
+
+    def generate_unsafe_ingress_entry(self, ingress_entry):
+        unsafe_ingress = {
+            "FromPort": str,
+            "ToPort": str,
+            "IpProtocol": str,
+            "CidrIp": str,
+        }
+        return unsafe_ingress
+
 
 class AWSWhitelist:
     def __init__(self, aws_client):
@@ -139,18 +161,8 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     for security_group in all_security_groups:
         # Validating if group is unused
         if security_group['GroupId'] not in all_attached_groups:
-            if 'VpcId' not in security_group.keys():
-                vpc_id = 'no-vpc'
-            else:
-                vpc_id = security_group['VpcId']
-            unused_group = {
-                'GroupName': security_group['GroupName'],
-                'GroupId': security_group['GroupId'],
-                'Description': security_group['Description'],
-                'VpcId': vpc_id,
-            }
             response['SecurityGroups']['UnusedByInstances'].append(
-                unused_group
+                analysis.generate_unused_security_group_entry(security_group)
             )
     return response
 
