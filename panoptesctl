@@ -9,7 +9,7 @@ def generate_analysis_output(analysis, output):
     output_options = {
         "json": panoptes.cloud_output.aws_output.output_json,
         "yml": panoptes.cloud_output.aws_output.output_yml,
-        "print": panoptes.cloud_output.aws_output.output_print,
+        "human": panoptes.cloud_output.aws_output.output_human,
     }
     output_options[output](analysis=analysis)
     return None
@@ -61,9 +61,9 @@ def gcp():
 )
 @click.option(
     '--output',
-    default='print',
+    default='human',
     help='Which kind of output you want the analysis',
-    type=click.Choice(['print', 'json', 'yml']),
+    type=click.Choice(['human', 'json', 'yml']),
 )
 @click.option(
     '--whitelist',

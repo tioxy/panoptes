@@ -23,8 +23,8 @@ def output_yml(analysis):
     return None
 
 
-def output_print(analysis):
-    print("PRINT")
+def output_human(analysis):
+    print("human")
     return None
 
 
