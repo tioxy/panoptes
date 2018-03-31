@@ -13,7 +13,9 @@ class AWSAnalysis:
         for instance_json in boto_ec2_instances['Reservations']:
             for instance in instance_json['Instances']:
                 for security_group in instance['SecurityGroups']:
-                    ec2_attached_groups.append(security_group['GroupId'])
+                    ec2_attached_groups.append(
+                        security_group['GroupId']
+                    )
         return list(set(ec2_attached_groups))
 
     def get_rds_attached_security_groups(self, aws_client):
@@ -26,6 +28,17 @@ class AWSAnalysis:
                     security_group['VpcSecurityGroupId']
                 )
         return list(set(rds_attached_groups))
+
+    def get_elb_attached_security_groups(self, aws_client):
+        elb_attached_groups = []
+        elb = aws_client.client('elb')
+        boto_load_balancers = elb.describe_load_balancers()
+        for elb_json in boto_load_balancers['LoadBalancerDescriptions']:
+            for security_group in elb_json['SecurityGroups']:
+                elb_attached_groups.append(
+                    security_group
+                )
+        return list(set(elb_attached_groups))
 
     def get_all_security_groups(self, aws_client):
         ec2 = aws_client.client('ec2')
@@ -116,6 +129,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     secgroup_services = {
         "ec2": analysis.get_ec2_attached_security_groups(aws_client),
         "rds": analysis.get_rds_attached_security_groups(aws_client),
+        "elb": analysis.get_elb_attached_security_groups(aws_client),
     }
     all_attached_groups = []
     for secgroup_services, attached_groups in secgroup_services.items():
@@ -135,7 +149,9 @@ def analyze_security_groups(aws_client, whitelist_file=None):
                 'Description': security_group['Description'],
                 'VpcId': vpc_id,
             }
-            response['SecurityGroups']['UnusedByInstances'].append(unused_group)
+            response['SecurityGroups']['UnusedByInstances'].append(
+                unused_group
+            )
     return response
 
 
