@@ -1,7 +1,9 @@
-__all__ = [
-    "cloud_authentication",
-    "cloud_providers",
-    "cloud_output",
-]
+""" Panoptes - Main Module
 
-from panoptes import *
+Responsible only to import the cloud respective folders, which were created to
+organize the project properly.
+"""
+
+from panoptes import cloud_output
+from panoptes import cloud_providers
+from panoptes import cloud_authentication

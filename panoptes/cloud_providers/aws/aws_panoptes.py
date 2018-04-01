@@ -1,11 +1,21 @@
-import boto3
+""" Panoptes - Cloud Authentication - AWS - AWS Panoptes
+
+Responsible to the entire AWS analysis. Here the dynamic whitelist,
+the logic behind unknown ingress rules and unused security groups are created.
+"""
 
 
 class AWSAnalysis:
+    """
+    Class used to gather data and format dictionaries to the final analysis
+    """
     def __init__(self):
         None
 
     def get_ec2_attached_security_groups(self, aws_client):
+        """
+        List security groups attached to EC2 instances
+        """
         ec2_attached_groups = []
         ec2 = aws_client.client('ec2')
         boto_ec2_instances = ec2.describe_instances()
@@ -18,6 +28,9 @@ class AWSAnalysis:
         return list(set(ec2_attached_groups))
 
     def get_rds_attached_security_groups(self, aws_client):
+        """
+        List security groups attached to RDS instances
+        """
         rds_attached_groups = []
         rds = aws_client.client('rds')
         boto_rds_instances = rds.describe_db_instances()
@@ -29,6 +42,9 @@ class AWSAnalysis:
         return list(set(rds_attached_groups))
 
     def get_elb_attached_security_groups(self, aws_client):
+        """
+        List security groups attached to Elastic Load Balancers
+        """
         elb_attached_groups = []
         elb = aws_client.client('elb')
         boto_load_balancers = elb.describe_load_balancers()
@@ -40,11 +56,18 @@ class AWSAnalysis:
         return list(set(elb_attached_groups))
 
     def get_all_security_groups(self, aws_client):
+        """
+        Get all security groups created
+        """
         ec2 = aws_client.client('ec2')
         all_security_groups = ec2.describe_security_groups()['SecurityGroups']
         return all_security_groups
 
     def generate_unused_security_group_entry(self, security_group):
+        """
+        Generates a dictionary from an unused security group to the analysis
+        response
+        """
         if 'VpcId' not in security_group.keys():
             vpc_id = 'no-vpc'
         else:
@@ -57,11 +80,13 @@ class AWSAnalysis:
         }
         return unused_group
 
-    def generate_unsafe_security_group_entry(
-        self,
-        security_group,
-        unsafe_ingress_entries
-    ):
+    def generate_unsafe_security_group_entry(self, security_group,
+                                             unsafe_ingress_entries):
+        """
+        Generates a dictionary from an unsafe security group, receiving all
+        unsafe ingress entries related to this security group to the analysis
+        response
+        """
         unsafe_group = {
             "GroupName": security_group['GroupName'],
             "GroupId": security_group['GroupId'],
@@ -71,6 +96,10 @@ class AWSAnalysis:
         return unsafe_group
 
     def generate_unsafe_ingress_entry(self, ingress_entry, unsafe_ip):
+        """
+        Generates a dictionary from an unsafe ingress entry to the analysis
+        response
+        """
         unsafe_ingress = {
             "IpProtocol": ingress_entry["IpProtocol"],
             "CidrIp": unsafe_ip,
@@ -83,6 +112,10 @@ class AWSAnalysis:
 
 
 class AWSWhitelist:
+    """
+    Class used to generate the dynamic whitelist of AWS Resources and consider
+    them not harmful and known resources
+    """
     def __init__(self, aws_client):
         self.safe_ips = list(set(self.get_vpc_ranges(aws_client)
                                  + self.get_subnet_ranges(aws_client)
@@ -90,6 +123,9 @@ class AWSWhitelist:
                                  + self.get_elastic_ips(aws_client)))
 
     def get_vpc_ranges(self, aws_client):
+        """
+        List VPCs CIDR ranges in the account
+        """
         ec2 = aws_client.client('ec2')
         boto_vpcs = ec2.describe_vpcs()
         vpc_ranges = [
@@ -98,6 +134,9 @@ class AWSWhitelist:
         return vpc_ranges
 
     def get_subnet_ranges(self, aws_client):
+        """
+        List Subnets CIDR ranges in the account
+        """
         ec2 = aws_client.client('ec2')
         boto_subnets = ec2.describe_subnets()
         subnet_ranges = [
@@ -106,6 +145,10 @@ class AWSWhitelist:
         return subnet_ranges
 
     def get_vpc_instances_ips(self, aws_client):
+        """
+        List Public and Private IPs from EC2 instances inside a VPC in the
+        account
+        """
         ec2 = aws_client.client('ec2')
         boto_instances = ec2.describe_instances()
         vpc_instances_ips = []
@@ -133,6 +176,9 @@ class AWSWhitelist:
         return vpc_instances_ips
 
     def get_elastic_ips(self, aws_client):
+        """
+        List all Elastic IPs reserved in the account
+        """
         ec2 = aws_client.client('ec2')
         boto_elastic_ips = ec2.describe_addresses()
         elastic_ips = []
@@ -148,6 +194,45 @@ class AWSWhitelist:
 
 
 def analyze_security_groups(aws_client, whitelist_file=None):
+    """
+    The main analysis function
+
+    Parameters:
+        - whitelist_file:
+            Type: list
+            Description: List of whitelisted CIDR from optional input file
+
+        - aws_client:
+            Type: boto3.Session
+            Description: Client object from cloud_authentication modules
+
+    DesiredReturn:
+            "SecurityGroups": {
+                "UnusedByInstances": [
+                    {
+                        "GroupName": str,
+                        "GroupId": str,
+                        "Description": str,
+                        "VpcId": str,
+                    }
+                ],
+                "UnsafeGroups": [
+                    {
+                        "GroupName": str,
+                        "GroupId": str,
+                        "Description": str,
+                        "UnsafePorts": [
+                            {
+                                "FromPort": int,
+                                "ToPort": int,
+                                "IpProtocol": str,
+                                "CidrIp": str,
+                            },
+                        ]
+                    },
+                ],
+            }
+    """
     response = {
         'SecurityGroups': {
             'UnusedByInstances': [],
@@ -200,36 +285,3 @@ def analyze_security_groups(aws_client, whitelist_file=None):
                 )
             )
     return response
-
-
-if __name__ == "__main__":
-    """
-    analyze_response_analysis = {
-        "SecurityGroups": {
-            "UnusedByInstances": [
-                {
-                    "GroupName": str,
-                    "GroupId": str,
-                    "Description": str,
-                    "VpcId": str,
-                }
-            ],
-            "UnsafeGroups": [
-                {
-                    "GroupName": str,
-                    "GroupId": str,
-                    "Description": str,
-                    "UnsafePorts": [
-                        {
-                            "FromPort": str,
-                            "ToPort": str,
-                            "IpProtocol": str,
-                            "CidrIp": str,
-                        },
-                    ]
-                },
-            ],
-        }
-    }
-    """
-    None

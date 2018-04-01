@@ -1,5 +1,9 @@
-__all__ = [
-    "aws",
-]
+""" Panoptes - Cloud Providers
 
-from panoptes.cloud_providers import *
+Responsible to import analysis functions from cloud providers.
+
+Every module folder must be created like the following one:
+<CLOUD_PROVIDER_NAME>/<CLOUD_PROVIDER_NAME>_panoptes.py
+"""
+
+from panoptes.cloud_providers import aws
