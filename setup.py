@@ -4,7 +4,7 @@ from setuptools import find_packages
 
 setup(
     name='panoptes',
-    version='0.1.0',
+    version='0.1.1',
     author='Gabriel Tiossi',
     author_email='gabrieltiossi@gmail.com',
     packages=find_packages(),
