@@ -277,7 +277,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
                             unsafe_ip=allowed_ip['CidrIp'],
                         )
                     )
-        if len(unsafe_ingress_entries) > 0:
+        if unsafe_ingress_entries:
             response['SecurityGroups']['UnsafeGroups'].append(
                 analysis.generate_unsafe_security_group_entry(
                     security_group=security_group,
