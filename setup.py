@@ -14,8 +14,9 @@ setup(
     description='The multi cloud security group analyzer.',
     long_description='https://github.com/tioxy/panoptes',
     install_requires=[
-        'click==6.7',
-        'boto3==1.6.21',
-        'PyYAML==3.12',
+        'awscli>=1.14.68',
+        'click>=6.7',
+        'boto3>=1.6.21',
+        'PyYAML>=3.12',
     ],
 )
