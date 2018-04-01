@@ -13,3 +13,7 @@ output_<OUTPUT_KIND>(analysis)
 """
 
 from panoptes.cloud_output import aws_output
+
+
+if __name__ == "__main__":
+    pass

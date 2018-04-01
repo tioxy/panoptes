@@ -7,3 +7,7 @@ Every module folder must be created like the following one:
 """
 
 from panoptes.cloud_providers import aws
+
+
+if __name__ == "__main__":
+    pass

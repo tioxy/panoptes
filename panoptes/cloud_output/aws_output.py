@@ -39,3 +39,7 @@ def output_human(analysis):
     """
     print("human")
     return None
+
+
+if __name__ == "__main__":
+    pass

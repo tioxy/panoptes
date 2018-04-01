@@ -28,3 +28,7 @@ def get_client(region, profile):
         "Error": error
     }
     return response
+
+
+if __name__ == "__main__":
+    pass

@@ -12,3 +12,7 @@ get_client(param1, param2, param3)
 """
 
 from panoptes.cloud_authentication import aws
+
+
+if __name__ == "__main__":
+    pass

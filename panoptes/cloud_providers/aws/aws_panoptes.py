@@ -10,7 +10,7 @@ class AWSAnalysis:
     Class used to gather data and format dictionaries to the final analysis
     """
     def __init__(self):
-        None
+        pass
 
     def get_ec2_attached_security_groups(self, aws_client):
         """
@@ -285,3 +285,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
                 )
             )
     return response
+
+
+if __name__ == "__main__":
+    pass
