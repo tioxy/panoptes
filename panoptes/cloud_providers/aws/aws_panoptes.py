@@ -208,7 +208,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
 
     DesiredReturn:
             "SecurityGroups": {
-                "UnusedByInstances": [
+                "UnusedGroups": [
                     {
                         "GroupName": str,
                         "GroupId": str,
@@ -235,7 +235,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     """
     response = {
         'SecurityGroups': {
-            'UnusedByInstances': [],
+            'UnusedGroups': [],
             'UnsafeGroups': [],
         }
     }
@@ -260,7 +260,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     for security_group in all_security_groups:
         # Validating if group is unused
         if security_group['GroupId'] not in all_attached_groups:
-            response['SecurityGroups']['UnusedByInstances'].append(
+            response['SecurityGroups']['UnusedGroups'].append(
                 analysis.generate_unused_security_group_entry(
                     security_group=security_group
                 )
