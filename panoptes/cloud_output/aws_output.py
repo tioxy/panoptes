@@ -53,6 +53,15 @@ def output_human(analysis):
                 + "ALERT: {}".format(content)
                 + Style.RESET_ALL)
 
+    def generate_section_message(content):
+        return (Style.RESET_ALL
+                + "\n\n\n"
+                + Style.BRIGHT
+                + Fore.WHITE
+                + content
+                + Style.RESET_ALL
+                + "\n")
+
     unused_groups_list = analysis['SecurityGroups']['UnusedGroups']
     unsafe_groups_list = analysis['SecurityGroups']['UnsafeGroups']
 
@@ -62,39 +71,46 @@ def output_human(analysis):
 ||                                                         ||
 ||                  PANOPTES AWS Analysis                  ||
 ||                                                         ||
-=============================================================
-    """)
+=============================================================""")
 
-    print("1. UNUSED SECURITY GROUPS")
-    if unused_groups_list:
-        amount_unused_msg = (
-            "There are now "
-            + str(len(unused_groups_list))
-            + " security groups not being used\n"
+    print(
+        generate_section_message(
+            "1. UNUSED SECURITY GROUPS"
         )
-        print(generate_warning_message(amount_unused_msg))
+    )
 
+    if unused_groups_list:
         for unused_group in unused_groups_list:
             unused_group_message = (
-                Fore.YELLOW
-                + unused_group['GroupId']
-                + Fore.WHITE
-                + " named "
-                + Fore.YELLOW
-                + unused_group['GroupName']
+                Fore.LIGHTYELLOW_EX + unused_group['GroupId']
+                + "   "
+                + Fore.WHITE + unused_group['GroupName']
+                + Style.RESET_ALL
             )
             print(unused_group_message)
+
+        print("")
+        amount_unused_msg = (
+            "There are "
+            + str(len(unused_groups_list))
+            + " security groups not being used"
+        )
+        print(generate_warning_message(amount_unused_msg))
     else:
-        msg = (
+        all_attached_msg = (
             "All security groups are attached and being used"
         )
-        print(generate_info_message(msg))
+        print(generate_info_message(all_attached_msg))
 
-    print(Style.RESET_ALL)
+    print(
+        generate_section_message(
+            "2. SECURITY GROUPS WITH UNSAFE INGRESS RULES"
+        )
+    )
     if unsafe_groups_list:
-        print("2. SECURITY GROUPS WITH UNSAFE INGRESS RULES")
         for unsafe_group in unsafe_groups_list:
             print("")
+
     return None
 
 
