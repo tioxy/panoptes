@@ -49,11 +49,26 @@ class AWSAnalysis:
         elb = aws_client.client('elb')
         boto_load_balancers = elb.describe_load_balancers()
         for elb_json in boto_load_balancers['LoadBalancerDescriptions']:
+            print(elb_json)
             for security_group in elb_json['SecurityGroups']:
                 elb_attached_groups.append(
                     security_group
                 )
         return list(set(elb_attached_groups))
+
+    def get_elbv2_attached_security_groups(self, aws_client):
+        """
+        List security groups attached to Elastic Load Balancers V2
+        """
+        elbv2_attached_groups = []
+        elbv2 = aws_client.client('elbv2')
+        boto_load_balancers = elbv2.describe_load_balancers()
+        for elbv2_json in boto_load_balancers['LoadBalancers']:
+            for security_group in elbv2_json['SecurityGroups']:
+                elbv2_attached_groups.append(
+                    security_group
+                )
+        return list(set(elbv2_attached_groups))
 
     def get_all_security_groups(self, aws_client):
         """
@@ -208,7 +223,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
 
     DesiredReturn:
             "SecurityGroups": {
-                "UnusedByInstances": [
+                "UnusedGroups": [
                     {
                         "GroupName": str,
                         "GroupId": str,
@@ -235,7 +250,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     """
     response = {
         'SecurityGroups': {
-            'UnusedByInstances': [],
+            'UnusedGroups': [],
             'UnsafeGroups': [],
         }
     }
@@ -251,6 +266,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
         "ec2": analysis.get_ec2_attached_security_groups(aws_client),
         "rds": analysis.get_rds_attached_security_groups(aws_client),
         "elb": analysis.get_elb_attached_security_groups(aws_client),
+        "elbv2": analysis.get_elbv2_attached_security_groups(aws_client),
     }
     all_attached_groups = []
     for secgroup_services, attached_groups in secgroup_services.items():
@@ -260,7 +276,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     for security_group in all_security_groups:
         # Validating if group is unused
         if security_group['GroupId'] not in all_attached_groups:
-            response['SecurityGroups']['UnusedByInstances'].append(
+            response['SecurityGroups']['UnusedGroups'].append(
                 analysis.generate_unused_security_group_entry(
                     security_group=security_group
                 )
