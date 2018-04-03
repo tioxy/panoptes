@@ -96,7 +96,7 @@ def output_human(analysis):
 
     print(
         generate_section_message(
-            "1. UNUSED SECURITY GROUPS"
+            "01. UNUSED SECURITY GROUPS"
         )
     )
 
@@ -106,8 +106,7 @@ def output_human(analysis):
         print(
             '\n' +
             generate_warning_message((
-                "There are "
-                + str(len(unused_groups_list))
+                str(len(unused_groups_list))
                 + " security groups not being used"
             ))
         )
@@ -119,7 +118,7 @@ def output_human(analysis):
 
     print(
         generate_section_message(
-            "2. SECURITY GROUPS WITH UNSAFE INGRESS RULES"
+            "02. SECURITY GROUPS WITH UNSAFE INGRESS RULES"
         )
     )
     if unsafe_groups_list:
