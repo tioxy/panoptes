@@ -5,7 +5,7 @@ Collection of functions to print AWS analysis output.
 
 import json
 import yaml
-from colorama import init, Fore, Back, Style
+import colorama
 
 
 def output_json(analysis):
@@ -39,33 +39,33 @@ def output_human(analysis):
     Converts the AWS analysis dictionary into human readable output
     """
     def generate_info_message(content):
-        return (Fore.LIGHTCYAN_EX
+        return (colorama.Fore.LIGHTCYAN_EX
                 + "INFO: {}".format(content)
-                + Style.RESET_ALL)
+                + colorama.Style.RESET_ALL)
 
     def generate_warning_message(content):
-        return (Fore.YELLOW
+        return (colorama.Fore.YELLOW
                 + "WARNING: {}".format(content)
-                + Style.RESET_ALL)
+                + colorama.Style.RESET_ALL)
 
     def generate_alert_message(content):
-        return (Fore.LIGHTRED_EX
+        return (colorama.Fore.LIGHTRED_EX
                 + "ALERT: {}".format(content)
-                + Style.RESET_ALL)
+                + colorama.Style.RESET_ALL)
 
     def generate_section_message(content):
-        return (Style.RESET_ALL
+        return (colorama.Style.RESET_ALL
                 + "\n\n\n"
-                + Style.BRIGHT
-                + Fore.WHITE
+                + colorama.Style.BRIGHT
+                + colorama.Fore.WHITE
                 + content
-                + Style.RESET_ALL
+                + colorama.Style.RESET_ALL
                 + "\n")
 
     unused_groups_list = analysis['SecurityGroups']['UnusedGroups']
     unsafe_groups_list = analysis['SecurityGroups']['UnsafeGroups']
 
-    init()
+    colorama.init()
     print("""
 =============================================================
 ||                                                         ||
@@ -82,14 +82,14 @@ def output_human(analysis):
     if unused_groups_list:
         for unused_group in unused_groups_list:
             unused_group_message = (
-                Fore.LIGHTYELLOW_EX + unused_group['GroupId']
+                colorama.Fore.LIGHTYELLOW_EX + unused_group['GroupId']
                 + "   "
-                + Fore.WHITE + unused_group['GroupName']
-                + Style.RESET_ALL
+                + colorama.Fore.WHITE + unused_group['GroupName']
+                + colorama.Style.RESET_ALL
             )
             print(unused_group_message)
 
-        print("")
+        print()
         amount_unused_msg = (
             "There are "
             + str(len(unused_groups_list))
