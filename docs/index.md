@@ -28,9 +28,14 @@ If you want to see the available options:
 panoptesctl aws analyze --help
 ```
 
-Generate an AWS analysis with an YML output from a specific region:
+Generate an AWS analysis with human readable output:
 ```bash
-panoptesctl aws analyze --region <YOUR_REGION_CODE> --output yml
+panoptesctl aws analyze --region <YOUR_REGION_CODE>
+```
+
+Generate an AWS analysis with an YML output and a Named Profile from AWS CLI:
+```bash
+panoptesctl aws analyze --region <YOUR_REGION_CODE> --profile your-profile --output yml
 ```
 *Check out [AWS Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) to see available region codes*
 
