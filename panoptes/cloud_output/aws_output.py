@@ -39,44 +39,51 @@ def output_human(analysis):
     Converts the AWS analysis dictionary into human readable output
     """
     def generate_info_message(content):
-        return (colorama.Fore.LIGHTCYAN_EX
+        return (colorama.Style.RESET_ALL
+                + colorama.Fore.LIGHTCYAN_EX
                 + "INFO: {}".format(content)
                 + colorama.Style.RESET_ALL)
 
     def generate_warning_message(content):
-        return (colorama.Fore.YELLOW
+        return (colorama.Style.RESET_ALL
+                + colorama.Fore.YELLOW
                 + "WARNING: {}".format(content)
                 + colorama.Style.RESET_ALL)
 
     def generate_alert_message(content):
-        return (colorama.Fore.LIGHTRED_EX
+        return (colorama.Style.RESET_ALL
+                + colorama.Fore.LIGHTRED_EX
                 + "ALERT: {}".format(content)
                 + colorama.Style.RESET_ALL)
 
     def generate_section_message(content):
-        return (colorama.Style.RESET_ALL
-                + "\n\n\n"
-                + colorama.Style.BRIGHT
-                + colorama.Fore.WHITE
-                + content
-                + colorama.Style.RESET_ALL
-                + "\n")
+        return (
+            colorama.Style.RESET_ALL
+            + "\n\n\n"
+            + colorama.Style.BRIGHT
+            + colorama.Fore.LIGHTGREEN_EX
+            + content
+            + colorama.Style.RESET_ALL
+        )
 
     def generate_ingress_message(protocol, range, cidr_ip, color):
-        return (colorama.Style.RESET_ALL
-                + colorama.Style.BRIGHT
-                + color
-                + "    "
-                + protocol
-                + "   "
-                + range
-                + "   "
-                + cidr_ip
-                + colorama.Style.RESET_ALL)
+        return (
+            colorama.Style.RESET_ALL
+            + colorama.Style.BRIGHT
+            + color
+            + "    "
+            + protocol
+            + "   "
+            + range
+            + "   "
+            + cidr_ip
+            + colorama.Style.RESET_ALL
+        )
 
     def generate_security_group_message(security_group):
         return (
-            colorama.Style.BRIGHT
+            colorama.Style.RESET_ALL
+            + colorama.Style.BRIGHT
             + colorama.Fore.MAGENTA + security_group['GroupId']
             + "   "
             + colorama.Fore.WHITE + security_group['GroupName']
@@ -87,12 +94,17 @@ def output_human(analysis):
     unsafe_groups_list = analysis['SecurityGroups']['UnsafeGroups']
 
     colorama.init()
-    print("""
+    print(
+        colorama.Style.RESET_ALL
+        + colorama.Style.BRIGHT
+        + colorama.Fore.LIGHTGREEN_EX
+        + """
 =============================================================
 ||                                                         ||
 ||                  PANOPTES AWS Analysis                  ||
 ||                                                         ||
-=============================================================""")
+=============================================================
+    """)
 
     print(
         generate_section_message(
@@ -125,7 +137,6 @@ def output_human(analysis):
         alert_rule_count = 0
         warning_rule_count = 0
         for unsafe_group in unsafe_groups_list:
-            print()
             print(generate_security_group_message(unsafe_group))
             for ingress in unsafe_group['UnsafePorts']:
                 range = None
@@ -175,13 +186,14 @@ def output_human(analysis):
                     range=range,
                     color=color,
                 ))
+            print()
 
         print()
         if warning_rule_count > 0:
             print(
                 generate_warning_message((
                     str(warning_rule_count)
-                    + " rules found with uknown IPs"
+                    + " rules found with unknown IPs"
                 ))
             )
 
