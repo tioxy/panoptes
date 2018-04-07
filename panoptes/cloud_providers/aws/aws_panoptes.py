@@ -19,8 +19,8 @@ class AWSAnalysis:
         ec2_attached_groups = []
         ec2 = aws_client.client('ec2')
         boto_ec2_instances = ec2.describe_instances()
-        for instance_json in boto_ec2_instances['Reservations']:
-            for instance in instance_json['Instances']:
+        for instance_obj in boto_ec2_instances['Reservations']:
+            for instance in instance_obj['Instances']:
                 for security_group in instance['SecurityGroups']:
                     ec2_attached_groups.append(
                         security_group['GroupId']
@@ -34,8 +34,8 @@ class AWSAnalysis:
         rds_attached_groups = []
         rds = aws_client.client('rds')
         boto_rds_instances = rds.describe_db_instances()
-        for db_instance_json in boto_rds_instances['DBInstances']:
-            for security_group in db_instance_json['VpcSecurityGroups']:
+        for db_instance_obj in boto_rds_instances['DBInstances']:
+            for security_group in db_instance_obj['VpcSecurityGroups']:
                 rds_attached_groups.append(
                     security_group['VpcSecurityGroupId']
                 )
@@ -48,9 +48,8 @@ class AWSAnalysis:
         elb_attached_groups = []
         elb = aws_client.client('elb')
         boto_load_balancers = elb.describe_load_balancers()
-        for elb_json in boto_load_balancers['LoadBalancerDescriptions']:
-            print(elb_json)
-            for security_group in elb_json['SecurityGroups']:
+        for elb_obj in boto_load_balancers['LoadBalancerDescriptions']:
+            for security_group in elb_obj['SecurityGroups']:
                 elb_attached_groups.append(
                     security_group
                 )
@@ -63,12 +62,29 @@ class AWSAnalysis:
         elbv2_attached_groups = []
         elbv2 = aws_client.client('elbv2')
         boto_load_balancers = elbv2.describe_load_balancers()
-        for elbv2_json in boto_load_balancers['LoadBalancers']:
-            for security_group in elbv2_json['SecurityGroups']:
+        for elbv2_obj in boto_load_balancers['LoadBalancers']:
+            for security_group in elbv2_obj['SecurityGroups']:
                 elbv2_attached_groups.append(
                     security_group
                 )
         return list(set(elbv2_attached_groups))
+
+    def get_lambda_attached_security_groups(self, aws_client):
+        """
+        List security groups attached to Lambda functions
+        """
+        lambda_attached_groups = []
+        lambda_aws = aws_client.client('lambda')
+        boto_lambda_aws = lambda_aws.list_functions()
+        for lambda_obj in boto_lambda_aws['Functions']:
+            if 'VpcConfig' in lambda_obj.keys():
+                for security_group in (
+                    lambda_obj['VpcConfig']['SecurityGroupIds']
+                ):
+                    lambda_attached_groups.append(
+                        security_group
+                    )
+        return list(set(lambda_attached_groups))
 
     def get_all_security_groups(self, aws_client):
         """
@@ -167,8 +183,8 @@ class AWSWhitelist:
         ec2 = aws_client.client('ec2')
         boto_instances = ec2.describe_instances()
         vpc_instances_ips = []
-        for instance_json in boto_instances['Reservations']:
-            for instance in instance_json['Instances']:
+        for instance_obj in boto_instances['Reservations']:
+            for instance in instance_obj['Instances']:
                 for instance_net in instance['NetworkInterfaces']:
                     if 'Association' in instance_net.keys():
                         vpc_instances_ips.append(
@@ -262,14 +278,18 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     whitelist = whitelist_file + aws_whitelist.safe_ips
 
     analysis = AWSAnalysis()
-    secgroup_services = {
+    services_attachedgroups = {
         "ec2": analysis.get_ec2_attached_security_groups(aws_client),
         "rds": analysis.get_rds_attached_security_groups(aws_client),
         "elb": analysis.get_elb_attached_security_groups(aws_client),
         "elbv2": analysis.get_elbv2_attached_security_groups(aws_client),
+        "lambda": analysis.get_lambda_attached_security_groups(aws_client),
     }
+    print(services_attachedgroups)
+    exit()
+
     all_attached_groups = []
-    for secgroup_services, attached_groups in secgroup_services.items():
+    for service, attached_groups in services_attachedgroups.items():
         all_attached_groups += attached_groups
 
     all_security_groups = analysis.get_all_security_groups(aws_client)
