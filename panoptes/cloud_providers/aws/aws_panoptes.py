@@ -92,6 +92,7 @@ class AWSAnalysis:
         """
         elasticache_attached_groups = []
         elasticache = aws_client.client('elasticache')
+
         boto_elasticache = elasticache.describe_cache_clusters()
         for elasticache_obj in boto_elasticache['CacheClusters']:
             for security_group in elasticache_obj['CacheSecurityGroups']:
@@ -103,6 +104,13 @@ class AWSAnalysis:
                     elasticache_attached_groups.append(
                         security_group['SecurityGroupId']
                     )
+
+        boto_elasticache_groups = elasticache.describe_cache_security_groups()
+        for elasticache_obj in boto_elasticache_groups['CacheSecurityGroups']:
+            for security_group in elasticache_obj['EC2SecurityGroups']:
+                elasticache_attached_groups.append(
+                    security_group['EC2SecurityGroupName']
+                )
         return list(set(elasticache_attached_groups))
 
     def get_all_security_groups(self, aws_client):
