@@ -86,6 +86,25 @@ class AWSAnalysis:
                     )
         return list(set(lambda_attached_groups))
 
+    def get_elasticache_attached_security_groups(self, aws_client):
+        """
+        List security groups attached to ElastiCache
+        """
+        elasticache_attached_groups = []
+        elasticache = aws_client.client('elasticache')
+        boto_elasticache = elasticache.describe_cache_clusters()
+        for elasticache_obj in boto_elasticache['CacheClusters']:
+            for security_group in elasticache_obj['CacheSecurityGroups']:
+                elasticache_attached_groups.append(
+                    security_group['CacheSecurityGroupName']
+                )
+            if 'SecurityGroups' in elasticache_obj.keys():
+                for security_group in elasticache_obj['SecurityGroups']:
+                    elasticache_attached_groups.append(
+                        security_group['SecurityGroupId']
+                    )
+        return list(set(elasticache_attached_groups))
+
     def get_all_security_groups(self, aws_client):
         """
         Get all security groups created
@@ -284,6 +303,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
         "elb": analysis.get_elb_attached_security_groups(aws_client),
         "elbv2": analysis.get_elbv2_attached_security_groups(aws_client),
         "lambda": analysis.get_lambda_attached_security_groups(aws_client),
+        "ec": analysis.get_elasticache_attached_security_groups(aws_client),
     }
     print(services_attachedgroups)
     exit()
