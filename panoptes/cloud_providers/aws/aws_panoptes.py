@@ -3,7 +3,6 @@
 Responsible to the entire AWS analysis. Here the dynamic whitelist,
 the logic behind unknown ingress rules and unused security groups are created.
 """
-import itertools
 
 
 class AWSAnalysis:
