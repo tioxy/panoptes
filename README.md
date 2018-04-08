@@ -2,7 +2,7 @@
 
 Panoptes is an automatic security group analyzer focused on reducing the amount of toiling. Mainly focused on AWS, built to be extensible in the future and support the big cloud providers out there.
 
-![Panoptes Usage](https://s3.amazonaws.com/tioxy.github/panoptes/sample.gif)
+<img src="https://s3.amazonaws.com/tioxy.github/panoptes/sample.gif" data-canonical-src="https://s3.amazonaws.com/tioxy.github/panoptes/sample.gif" width="600" height="900" />
 
 <br>
 
