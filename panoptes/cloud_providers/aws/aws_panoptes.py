@@ -12,7 +12,7 @@ class AWSAnalysis:
     def __init__(self):
         pass
 
-    def get_ec2_attached_security_groups(self, aws_client):
+    def list_ec2_attached_secgroups(self, aws_client):
         """
         List security groups attached to EC2 instances
         """
@@ -27,7 +27,7 @@ class AWSAnalysis:
                     )
         return list(set(ec2_attached_groups))
 
-    def get_rds_attached_security_groups(self, aws_client):
+    def list_rds_attached_secgroups(self, aws_client):
         """
         List security groups attached to RDS instances
         """
@@ -41,7 +41,7 @@ class AWSAnalysis:
                 )
         return list(set(rds_attached_groups))
 
-    def get_elb_attached_security_groups(self, aws_client):
+    def list_elb_attached_secgroups(self, aws_client):
         """
         List security groups attached to Elastic Load Balancers
         """
@@ -55,7 +55,7 @@ class AWSAnalysis:
                 )
         return list(set(elb_attached_groups))
 
-    def get_elbv2_attached_security_groups(self, aws_client):
+    def list_elbv2_attached_secgroups(self, aws_client):
         """
         List security groups attached to Elastic Load Balancers V2
         """
@@ -70,7 +70,7 @@ class AWSAnalysis:
                     )
         return list(set(elbv2_attached_groups))
 
-    def get_lambda_attached_security_groups(self, aws_client):
+    def list_lambda_attached_secgroups(self, aws_client):
         """
         List security groups attached to Lambda functions
         """
@@ -80,14 +80,14 @@ class AWSAnalysis:
         for lambda_obj in boto_lambda_aws['Functions']:
             if 'VpcConfig' in lambda_obj.keys():
                 for security_group in (
-                    lambda_obj['VpcConfig']['SecurityGroupIds']
+                        lambda_obj['VpcConfig']['SecurityGroupIds']
                 ):
                     lambda_attached_groups.append(
                         security_group
                     )
         return list(set(lambda_attached_groups))
 
-    def get_elasticache_attached_security_groups(self, aws_client):
+    def list_elasticache_attached_secgroups(self, aws_client):
         """
         List security groups attached to ElastiCache
         """
@@ -116,7 +116,7 @@ class AWSAnalysis:
             pass
         return list(set(elasticache_attached_groups))
 
-    def get_ecs_attached_security_groups(self, aws_client):
+    def list_ecs_attached_secgroups(self, aws_client):
         """
         List security groups attached to ECS Services
         """
@@ -148,9 +148,9 @@ class AWSAnalysis:
                 for ecs_obj in boto_ecs['services']:
                     if 'networkConfiguration' in ecs_obj.keys():
                         for security_group in (
-                            ecs_obj['networkConfiguration']
-                                   ['awsvpcConfiguration']
-                                   ['securityGroups']
+                                ecs_obj['networkConfiguration']
+                                       ['awsvpcConfiguration']
+                                       ['securityGroups']
                         ):
                             ecs_attached_groups.append(
                                 security_group
@@ -165,7 +165,7 @@ class AWSAnalysis:
         all_security_groups = ec2.describe_security_groups()['SecurityGroups']
         return all_security_groups
 
-    def generate_unused_security_group_entry(self, security_group):
+    def generate_unused_secgroup_entry(self, security_group):
         """
         Generates a dictionary from an unused security group to the analysis
         response
@@ -182,7 +182,7 @@ class AWSAnalysis:
         }
         return unused_group
 
-    def generate_unsafe_security_group_entry(self, security_group,
+    def generate_unsafe_secgroup_entry(self, security_group,
                                              unsafe_ingress_entries):
         """
         Generates a dictionary from an unsafe security group, receiving all
@@ -350,13 +350,13 @@ def analyze_security_groups(aws_client, whitelist_file=None):
 
     analysis = AWSAnalysis()
     services_attachedgroups = {
-        "ec2": analysis.get_ec2_attached_security_groups(aws_client),
-        "rds": analysis.get_rds_attached_security_groups(aws_client),
-        "elb": analysis.get_elb_attached_security_groups(aws_client),
-        "elbv2": analysis.get_elbv2_attached_security_groups(aws_client),
-        "lambda": analysis.get_lambda_attached_security_groups(aws_client),
-        "ec": analysis.get_elasticache_attached_security_groups(aws_client),
-        "ecs": analysis.get_ecs_attached_security_groups(aws_client),
+        "ec2": analysis.list_ec2_attached_secgroups(aws_client),
+        "rds": analysis.list_rds_attached_secgroups(aws_client),
+        "elb": analysis.list_elb_attached_secgroups(aws_client),
+        "elbv2": analysis.list_elbv2_attached_secgroups(aws_client),
+        "lambda": analysis.list_lambda_attached_secgroups(aws_client),
+        "ec": analysis.list_elasticache_attached_secgroups(aws_client),
+        "ecs": analysis.list_ecs_attached_secgroups(aws_client),
     }
 
     all_attached_groups = []
@@ -367,11 +367,11 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     for security_group in all_security_groups:
         # Validating if group is unused
         if (
-            security_group['GroupName'] not in all_attached_groups and
-            security_group['GroupId'] not in all_attached_groups
+                security_group['GroupName'] not in all_attached_groups and
+                security_group['GroupId'] not in all_attached_groups
         ):
             response['SecurityGroups']['UnusedGroups'].append(
-                analysis.generate_unused_security_group_entry(
+                analysis.generate_unused_secgroup_entry(
                     security_group=security_group
                 )
             )
@@ -389,7 +389,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
                     )
         if unsafe_ingress_entries:
             response['SecurityGroups']['UnsafeGroups'].append(
-                analysis.generate_unsafe_security_group_entry(
+                analysis.generate_unsafe_secgroup_entry(
                     security_group=security_group,
                     unsafe_ingress_entries=unsafe_ingress_entries,
                 )
