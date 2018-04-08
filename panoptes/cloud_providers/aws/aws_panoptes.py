@@ -91,9 +91,9 @@ class AWSAnalysis:
         List security groups attached to ElastiCache
         """
         elasticache_attached_groups = []
-        elasticache = aws_client.client('elasticache')
+        ecache = aws_client.client('elasticache')
 
-        boto_elasticache = elasticache.describe_cache_clusters()
+        boto_elasticache = ecache.describe_cache_clusters()
         for elasticache_obj in boto_elasticache['CacheClusters']:
             for security_group in elasticache_obj['CacheSecurityGroups']:
                 elasticache_attached_groups.append(
@@ -105,12 +105,15 @@ class AWSAnalysis:
                         security_group['SecurityGroupId']
                     )
 
-        boto_elasticache_groups = elasticache.describe_cache_security_groups()
-        for elasticache_obj in boto_elasticache_groups['CacheSecurityGroups']:
-            for security_group in elasticache_obj['EC2SecurityGroups']:
-                elasticache_attached_groups.append(
-                    security_group['EC2SecurityGroupName']
-                )
+        try:
+            boto_elasticache = ecache.describe_cache_security_groups()
+            for elasticache_obj in elasticache_groups['CacheSecurityGroups']:
+                for security_group in elasticache_obj['EC2SecurityGroups']:
+                    elasticache_attached_groups.append(
+                        security_group['EC2SecurityGroupName']
+                    )
+        except Exception as e:
+            pass
         return list(set(elasticache_attached_groups))
 
     def get_all_security_groups(self, aws_client):
@@ -313,8 +316,6 @@ def analyze_security_groups(aws_client, whitelist_file=None):
         "lambda": analysis.get_lambda_attached_security_groups(aws_client),
         "ec": analysis.get_elasticache_attached_security_groups(aws_client),
     }
-    print(services_attachedgroups)
-    exit()
 
     all_attached_groups = []
     for service, attached_groups in services_attachedgroups.items():
@@ -323,7 +324,10 @@ def analyze_security_groups(aws_client, whitelist_file=None):
     all_security_groups = analysis.get_all_security_groups(aws_client)
     for security_group in all_security_groups:
         # Validating if group is unused
-        if security_group['GroupId'] not in all_attached_groups:
+        if (
+            security_group['GroupName'] not in all_attached_groups and
+            security_group['GroupId'] not in all_attached_groups
+        ):
             response['SecurityGroups']['UnusedGroups'].append(
                 analysis.generate_unused_security_group_entry(
                     security_group=security_group
