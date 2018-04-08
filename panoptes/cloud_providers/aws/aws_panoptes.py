@@ -107,7 +107,7 @@ class AWSAnalysis:
 
         try:
             boto_elasticache = ecache.describe_cache_security_groups()
-            for elasticache_obj in elasticache_groups['CacheSecurityGroups']:
+            for elasticache_obj in boto_elasticache['CacheSecurityGroups']:
                 for security_group in elasticache_obj['EC2SecurityGroups']:
                     elasticache_attached_groups.append(
                         security_group['EC2SecurityGroupName']
