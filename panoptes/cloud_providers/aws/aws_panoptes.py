@@ -3,6 +3,7 @@
 Responsible to the entire AWS analysis. Here the dynamic whitelist,
 the logic behind unknown ingress rules and unused security groups are created.
 """
+import itertools
 
 
 class AWSAnalysis:
@@ -63,10 +64,11 @@ class AWSAnalysis:
         elbv2 = aws_client.client('elbv2')
         boto_load_balancers = elbv2.describe_load_balancers()
         for elbv2_obj in boto_load_balancers['LoadBalancers']:
-            for security_group in elbv2_obj['SecurityGroups']:
-                elbv2_attached_groups.append(
-                    security_group
-                )
+            if 'SecurityGroups' in elbv2_obj.keys():
+                for security_group in elbv2_obj['SecurityGroups']:
+                    elbv2_attached_groups.append(
+                        security_group
+                    )
         return list(set(elbv2_attached_groups))
 
     def get_lambda_attached_security_groups(self, aws_client):
@@ -104,7 +106,6 @@ class AWSAnalysis:
                     elasticache_attached_groups.append(
                         security_group['SecurityGroupId']
                     )
-
         try:
             boto_elasticache = ecache.describe_cache_security_groups()
             for elasticache_obj in boto_elasticache['CacheSecurityGroups']:
@@ -115,6 +116,47 @@ class AWSAnalysis:
         except Exception as e:
             pass
         return list(set(elasticache_attached_groups))
+
+    def get_ecs_attached_security_groups(self, aws_client):
+        """
+        List security groups attached to ECS Services
+        """
+        ecs_attached_groups = []
+        ecs = aws_client.client('ecs')
+
+        ecs_clusters = [
+            ecs_clusters for ecs_clusters in ecs.list_clusters()['clusterArns']
+        ]
+
+        ecs_cluster_services = []
+        for cluster in ecs_clusters:
+            boto_services = ecs.list_services(cluster=cluster)
+            if boto_services['serviceArns']:
+                ecs_cluster_services.append(
+                    {
+                        'ClusterName': cluster,
+                        'Services': boto_services['serviceArns'],
+                    }
+                )
+
+        ECS_SERVICE_API_LIMIT = 10
+        for cluster in ecs_cluster_services:
+            for i in range(0, len(cluster['Services']), ECS_SERVICE_API_LIMIT):
+                boto_ecs = ecs.describe_services(
+                    cluster=cluster['ClusterName'],
+                    services=cluster['Services'][i:i+ECS_SERVICE_API_LIMIT]
+                )
+                for ecs_obj in boto_ecs['services']:
+                    if 'networkConfiguration' in ecs_obj.keys():
+                        for security_group in (
+                            ecs_obj['networkConfiguration']
+                                   ['awsvpcConfiguration']
+                                   ['securityGroups']
+                        ):
+                            ecs_attached_groups.append(
+                                security_group
+                            )
+        return list(set(ecs_attached_groups))
 
     def get_all_security_groups(self, aws_client):
         """
@@ -315,6 +357,7 @@ def analyze_security_groups(aws_client, whitelist_file=None):
         "elbv2": analysis.get_elbv2_attached_security_groups(aws_client),
         "lambda": analysis.get_lambda_attached_security_groups(aws_client),
         "ec": analysis.get_elasticache_attached_security_groups(aws_client),
+        "ecs": analysis.get_ecs_attached_security_groups(aws_client),
     }
 
     all_attached_groups = []
