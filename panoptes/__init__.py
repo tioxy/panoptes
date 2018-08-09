@@ -4,9 +4,7 @@ Responsible only to import the cloud respective folders, which were created to
 organize the project properly.
 """
 
-from panoptes import cloud_output
-from panoptes import cloud_providers
-from panoptes import cloud_authentication
+from panoptes import aws
 
 
 if __name__ == "__main__":

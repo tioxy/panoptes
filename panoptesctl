@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 import click
-import panoptes.cloud_authentication
-import panoptes.cloud_providers
-import panoptes.cloud_output
+import panoptes.aws
 
 
-def generate_analysis_output(analysis, output):
+def generate_analysis_output(output, analysis):
     output_options = {
-        "json": panoptes.cloud_output.aws_output.output_json,
-        "yml": panoptes.cloud_output.aws_output.output_yml,
-        "human": panoptes.cloud_output.aws_output.output_human,
+        "json": panoptes.aws.output.output_json,
+        "yml": panoptes.aws.output.output_yml,
+        "human": panoptes.aws.output.output_human,
     }
     output_options[output](analysis=analysis)
     return None
@@ -71,32 +69,30 @@ def gcp():
     metavar='<path>'
 )
 def aws_analyze_command(region, profile, output, whitelist=None):
-    if whitelist is None:
-        whitelist_file = None
-    else:
-        whitelist_file = read_whitelist_file(whitelist)
+    if whitelist:
+        whitelist = read_whitelist_file(
+            whitelist_path = whitelist
+        )
 
-    aws_authentication = panoptes.cloud_authentication.aws.get_client(
+    aws_authentication = panoptes.aws.authentication.get_client(
         region=region,
         profile=profile,
     )
 
-    if aws_authentication["Error"] is not None:
-        print(aws_authetication["Error"])
-    else:
-        aws_client = aws_authentication["Client"]
-        analysis = panoptes.cloud_providers.aws.aws_panoptes.analyze_security_groups(
+    if aws_authetication:
+        aws_client = aws_authentication
+        analysis = panoptes.aws.analyze.analyze_security_groups(
             aws_client,
-            whitelist_file,
+            whitelist,
         )
         generate_analysis_output(
-            analysis=analysis,
             output=output,
+            analysis=analysis,
         )
     return None
 
 
-def read_whitelist_file(whitelist):
+def read_whitelist_file(whitelist_path):
     with open(whitelist, 'r') as whitelist_file:
         whitelist = whitelist_file.read().splitlines()
     return whitelist
