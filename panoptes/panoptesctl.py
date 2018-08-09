@@ -100,6 +100,6 @@ def read_whitelist_file(whitelist_path):
     return whitelist
 
 
-#if __name__ == "__main__":
-#    cli()
-#    exit()
+if __name__ == "__main__":
+    cli()
+    exit()
