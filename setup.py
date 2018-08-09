@@ -1,18 +1,32 @@
-from distutils.core import setup
-from setuptools import find_packages
+from setuptools import setup, find_packages
+from os import path
+from io import open
 
 
+# Reading the README.md file and adding to package
+here = path.abspath(path.dirname(__file__))
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
+
+# Package setup definition
 setup(
     name='panoptes',
     version='0.2.2',
+    description='The multi cloud security group analyzer',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/tioxy/panoptes',
     author='Gabriel Tiossi',
     author_email='gabrieltiossi@gmail.com',
+    keywords='panoptes aws security analysis cloud devops',
     packages=find_packages(),
-    scripts=['panoptesctl'],
-    url='http://pypi.python.org/pypi/panoptes/',
+    entry_points={
+        'console_scripts': [
+            'panoptesctl = panoptes.panoptesctl:main',
+        ],
+    },
     license='LICENSE',
-    description='The multi cloud security group analyzer.',
-    long_description='https://github.com/tioxy/panoptes',
     install_requires=[
         'colorama>=0.3.7',
         'awscli>=1.14.68',
