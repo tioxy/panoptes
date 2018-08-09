@@ -19,9 +19,10 @@ def get_client(region, profile):
     except Exception:
         client = None
         error = (
-            "ERROR - Was not possible authenticating at AWS, "
+            "ERROR - Panoptes could not authenticate to AWS, "
             "check if your credentials exist and work."
         )
+        print(error)
         # Log variable error here
     return client
 
