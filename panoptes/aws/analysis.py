@@ -1,4 +1,4 @@
-""" Panoptes - Cloud Providers - AWS Panoptes
+""" Panoptes - AWS - Analysis
 
 Responsible to the entire AWS analysis. Here the dynamic whitelist,
 the logic behind unknown ingress rules and unused security groups are created.

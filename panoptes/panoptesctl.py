@@ -47,34 +47,37 @@ def gcp():
 )
 @click.option(
     '--region',
+    'region',
     required=True,
     help='AWS Region to list the security groups',
-    metavar='<region_id>'
+    metavar='<region_id>',
 )
 @click.option(
     '--profile',
+    'profile',
     default='default',
     help='AWS CLI configured profile which will be used',
-    metavar='<profile_name>'
+    metavar='<profile_name>',
 )
 @click.option(
     '--output',
+    'output',
     default='human',
     help='Which kind of output you want the analysis',
     type=click.Choice(['human', 'json', 'yml']),
 )
 @click.option(
     '--whitelist',
+    'whitelist_path',
     help='Whitelist with declared safe IPs and CIDR',
-    metavar='<path>'
+    metavar='<path>',
 )
-def aws_analyze_command(region, profile, output, whitelist=None):
-    if whitelist:
+def aws_analyze_command(region, profile, output, whitelist_path=None):
+    whitelist = []
+    if whitelist_path:
         whitelist = read_whitelist_file(
-            whitelist_path=whitelist
+            whitelist_path=whitelist_path
         )
-    else:
-        whitelist = []
 
     aws_authentication = panoptes.aws.authentication.get_client(
         region=region,
@@ -83,7 +86,7 @@ def aws_analyze_command(region, profile, output, whitelist=None):
 
     if aws_authentication:
         aws_client = aws_authentication
-        analysis = panoptes.aws.analyze.analyze_security_groups(
+        analysis = panoptes.aws.analysis.analyze_security_groups(
             aws_client=aws_authentication,
             whitelist=whitelist,
         )
@@ -95,7 +98,7 @@ def aws_analyze_command(region, profile, output, whitelist=None):
 
 
 def read_whitelist_file(whitelist_path):
-    with open(whitelist, 'r') as whitelist_file:
+    with open(whitelist_path, 'r') as whitelist_file:
         whitelist = whitelist_file.read().splitlines()
     return whitelist
 
