@@ -23,15 +23,14 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'panoptesctl = panoptes.panoptesctl:main',
+            'panoptesctl = panoptes.panoptesctl:cli',
         ],
     },
     license='LICENSE',
-    install_requires=[
-        'colorama>=0.3.7',
-        'awscli>=1.14.68',
-        'click>=6.7',
-        'boto3>=1.6.21',
-        'PyYAML>=3.12',
+        install_requires=[
+        'colorama==0.3.9',
+        'boto3==1.7.73',
+        'PyYAML==3.13',
+        'click==6.7',
     ],
 )

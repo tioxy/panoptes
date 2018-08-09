@@ -1,4 +1,4 @@
-boto3==1.6.21
-setuptools==39.0.1
-colorama==0.3.7
-PyYAML==3.12
+colorama==0.3.9
+boto3==1.7.73
+PyYAML==3.13
+click==6.7
