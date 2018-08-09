@@ -5,7 +5,7 @@ organize the project properly.
 """
 
 from panoptes import aws
-
+from panoptes import panoptesctl
 
 if __name__ == "__main__":
     pass
