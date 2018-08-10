@@ -47,7 +47,7 @@ Generate the analysis output
     - ```human``` : YAML prettified output
 
 
-- **```--whitelist```** : Path to [whitelist](../whitelist_sample.txt) with declared safe IPs and CIDR
+- **```--whitelist```** : Path to [whitelist](../whitelist_example.txt) with declared safe IPs and CIDR
 
 #### Requirements
 You need specific IAM permissions to analyze without headaches. There are some ways to give Panoptes permission to analyze content:
