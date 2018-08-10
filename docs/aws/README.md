@@ -33,19 +33,19 @@ The Automatic AWS Whitelist feature can't whitelist *public* and *private* IP's 
 ### [panoptes aws analyze](#comm-analyze)
 Generate the analysis output
 ##### Options
-- ```--region``` : (Required) AWS Region to list the security groups
+- **```--region```** : (Required) AWS Region to list the security groups
 
 
-- ```--profile``` : (Default: **```default```**) AWS CLI configured profile which will be used
+- **```--profile```** : (Default: **default**) AWS CLI configured profile which will be used
 
 
-- ```--output``` : (Default: **```human```**) Which kind of output you want the analysis.
+- ```--output``` : (Default: **human**) Which kind of output you want the analysis.
     - **human** : Colorful human ouput
     - **json** : JSON prettified output
     - **human** : YAML prettified output
 
 
-- ```--whitelist``` : Path to [whitelist](../whitelist_sample.txt) with declared safe IPs and CIDR
+- **```--whitelist```** : Path to [whitelist](../whitelist_sample.txt) with declared safe IPs and CIDR
 
 #### Requirements
 You need specific IAM permissions to analyze without headaches. There are some ways to give Panoptes permission to analyze content:
