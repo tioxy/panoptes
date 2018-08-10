@@ -4,7 +4,7 @@
     - [Dynamic Whitelist](README.md#info-dynamic-whitelist)
     - [Limitations](README.md#info-limitations)
 - [Commands](README.md#comm)
-    - [panoptes aws analyze](README.md#comm-analyze)
+    - [panoptesctl aws analyze](README.md#comm-analyze)
 - [Panoptes for Developers](README.md#integrating)
 
 
@@ -32,7 +32,7 @@ The Automatic AWS Whitelist feature can't whitelist *public* and *private* IP's 
 
 ## [Commands](#comm)
 
-### [panoptes aws analyze](#comm-analyze)
+### [panoptesctl aws analyze](#comm-analyze)
 Generate the analysis output
 ##### Options
 - **```--region```** : (Required) AWS Region to list the security groups
@@ -59,5 +59,5 @@ You need specific IAM permissions to analyze without headaches. There are some w
 
 ##### Example
 ```sh
-panoptes aws analyze --region us-east-1 --profile my-aws-profile --output yml --whitelist /path/to/my/whitelist.txt
+panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output yml --whitelist /path/to/my/whitelist.txt
 ```
