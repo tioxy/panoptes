@@ -1,11 +1,11 @@
 # Panoptes - AWS
 
-- [Information](index.md#info)
-    - [Dynamic Whitelist](index.md#info-dynamic-whitelist)
-    - [Limitations](index.md#info-limitations)
-- [Commands](index.md#comm)
-    - [panoptes aws analyze](index.md#comm-analyze)
-- [Panoptes for Developers](index.md#integrating)
+- [Information](README.md#info)
+    - [Dynamic Whitelist](README.md#info-dynamic-whitelist)
+    - [Limitations](README.md#info-limitations)
+- [Commands](README.md#comm)
+    - [panoptes aws analyze](README.md#comm-analyze)
+- [Panoptes for Developers](README.md#integrating)
 
 
 <br>
