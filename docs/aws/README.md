@@ -39,7 +39,7 @@ Generate the analysis output
 - **```--profile```** : (Default: **default**) AWS CLI configured profile which will be used
 
 
-- ```--output``` : (Default: **human**) Which kind of output you want the analysis.
+- **```--output```** : (Default: **human**) Which kind of output you want the analysis.
     - **human** : Colorful human ouput
     - **json** : JSON prettified output
     - **human** : YAML prettified output
