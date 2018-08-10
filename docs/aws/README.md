@@ -36,10 +36,10 @@ Generate the analysis output
 - **```--region```** : (Required) AWS Region to list the security groups
 
 
-- **```--profile```** : (Default: **default**) AWS CLI configured profile which will be used
+- **```--profile```** : (Default: ```default```) AWS CLI configured profile which will be used
 
 
-- **```--output```** : (Default: **human**) Which kind of output you want the analysis.
+- **```--output```** : (Default: ```human```) Which kind of output you want the analysis.
     - **human** : Colorful human ouput
     - **json** : JSON prettified output
     - **human** : YAML prettified output
@@ -50,9 +50,9 @@ Generate the analysis output
 #### Requirements
 You need specific IAM permissions to analyze without headaches. There are some ways to give Panoptes permission to analyze content:
 
-```The Fast Way``` : Attach the policy **ReadOnlyAccess** to the user/role
+**```The Fast Way```** : Attach the policy ```ReadOnlyAccess``` to the user/role
 
-```The Compliance Way``` : Create an IAM Policy from [this .json file](aws_analyze_policy.json) and attach it to the user/role
+**```The "Compliance" Way```** : Create an IAM Policy from [this .json file](aws_analyze_policy.json) and attach it to the user/role
 
 
 ##### Example
