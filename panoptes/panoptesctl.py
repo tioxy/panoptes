@@ -43,7 +43,7 @@ def gcp():
 
 @aws.command(
     'analyze',
-    help="Generate the analysis file"
+    help="Generate the analysis output"
 )
 @click.option(
     '--region',
@@ -69,7 +69,7 @@ def gcp():
 @click.option(
     '--whitelist',
     'whitelist_path',
-    help='Whitelist with declared safe IPs and CIDR',
+    help='Path to whitelist with declared safe IPs and CIDR',
     metavar='<path>',
 )
 def aws_analyze_command(region, profile, output, whitelist_path=None):
