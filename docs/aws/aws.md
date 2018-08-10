@@ -11,7 +11,7 @@
 <br>
 
 ----
-## [Information](#information)
+## [Information](#info)
 ### [Dynamic Whitelist](#info-dynamic-whitelist)
 Panoptes generates automatically a list of IP's which it does not consider harmful from the desired cloud provider. Inside AWS, it generates from:
 - VPC ranges
