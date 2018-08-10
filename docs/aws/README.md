@@ -40,9 +40,9 @@ Generate the analysis output
 
 
 - **```--output```** : (Default: ```human```) Which kind of output you want the analysis.
-    - **human** : Colorful human ouput
-    - **json** : JSON prettified output
-    - **human** : YAML prettified output
+    - ```human``` : Colorful human ouput
+    - ```json``` : JSON prettified output
+    - ```human``` : YAML prettified output
 
 
 - **```--whitelist```** : Path to [whitelist](../whitelist_sample.txt) with declared safe IPs and CIDR
