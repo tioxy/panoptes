@@ -67,7 +67,7 @@ panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output yml
 ----
 
 ## [Integration for Developers](#integrating)
-```python]
+```python
 import panoptes
 from pprint import pprint
 
