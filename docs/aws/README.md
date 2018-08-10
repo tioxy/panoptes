@@ -11,6 +11,7 @@
 <br>
 
 ----
+
 ## [Information](#info)
 ### [Dynamic Whitelist](#info-dynamic-whitelist)
 Panoptes generates automatically a list of IP's which it does not consider harmful from the desired cloud provider. Inside AWS, it generates from:
@@ -28,6 +29,7 @@ The Automatic AWS Whitelist feature can't whitelist *public* and *private* IP's 
 <br>
 
 ----
+
 ## [Commands](#comm)
 
 ### [panoptes aws analyze](#comm-analyze)
