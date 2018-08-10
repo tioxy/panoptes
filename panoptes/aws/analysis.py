@@ -295,7 +295,7 @@ class AWSWhitelist:
         return elastic_ips
 
 
-def analyze_security_groups(aws_client, whitelist):
+def analyze_security_groups(aws_client, whitelist=[]):
     """
     The main analysis function
 

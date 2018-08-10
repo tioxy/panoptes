@@ -5,7 +5,7 @@
     - [Limitations](README.md#info-limitations)
 - [Commands](README.md#comm)
     - [panoptesctl aws analyze](README.md#comm-analyze)
-- [Panoptes for Developers](README.md#integrating)
+- [Integration for Developers](README.md#integrating)
 
 
 <br>
@@ -60,4 +60,16 @@ You need specific IAM permissions to analyze without headaches. There are some w
 ##### Example
 ```sh
 panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output yml --whitelist /path/to/my/whitelist.txt
+```
+
+<br>
+
+----
+
+## [Integration for Developers](#integrating)
+```python]
+import panoptes
+
+def main():
+    
 ```
