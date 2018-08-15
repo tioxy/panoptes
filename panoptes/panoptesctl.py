@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 import click
 import panoptes.aws
+import panoptes.generic
 
 
 def generate_analysis_output(output, analysis):
     output_options = {
-        "json": panoptes.aws.output.output_json,
-        "yml": panoptes.aws.output.output_yml,
-        "human": panoptes.aws.output.output_human,
+        "json": panoptes.generic.output.print_json,
+        "yml": panoptes.generic.output.print_yml,
+        "human": panoptes.aws.output.print_human,
     }
     output_options[output](analysis=analysis)
     return None
