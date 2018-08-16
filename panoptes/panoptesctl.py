@@ -4,16 +4,11 @@ import panoptes.aws
 import panoptes.generic
 
 
-def generate_analysis_output(output, analysis):
-    output_options = {
-        "json": panoptes.generic.output.print_json,
-        "yml": panoptes.generic.output.print_yml,
-        "human": panoptes.aws.output.print_human,
-    }
-    output_options[output](analysis=analysis)
-    return None
-
-
+AVAILABLE_OUTPUT_OPTIONS = [
+    'human',
+    'json',
+    'yml',
+]
 @click.group()
 def cli():
     """Welcome to Panoptes - The multi cloud security group analyzer
@@ -65,43 +60,40 @@ def gcp():
     'output',
     default='human',
     help='Which kind of output you want the analysis',
-    type=click.Choice(['human', 'json', 'yml']),
+    type=click.Choice(AVAILABLE_OUTPUT_OPTIONS),
 )
 @click.option(
     '--whitelist',
     'whitelist_path',
+    default=None,
     help='Path to whitelist with declared safe IPs and CIDR',
     metavar='<path>',
 )
-def aws_analyze_command(region, profile, output, whitelist_path=None):
+def aws_analyze_command(region, profile, output, whitelist_path):
+    aws_output_options = {
+        "human": panoptes.aws.output.print_human,
+        "json": panoptes.generic.output.print_json,
+        "yml": panoptes.generic.output.print_yml,
+    }
+
     whitelist = []
     if whitelist_path:
-        whitelist = read_whitelist_file(
+        whitelist = panoptes.generic.parser.parse_whitelist_file(
             whitelist_path=whitelist_path
         )
 
-    aws_authentication = panoptes.aws.authentication.get_client(
+    aws_client = panoptes.aws.authentication.get_client(
         region=region,
         profile=profile,
     )
 
-    if aws_authentication:
-        aws_client = aws_authentication
+    if aws_client:
         analysis = panoptes.aws.analysis.analyze_security_groups(
-            aws_client=aws_authentication,
+            aws_client=aws_client,
             whitelist=whitelist,
         )
-        generate_analysis_output(
-            output=output,
-            analysis=analysis,
-        )
+        aws_output_options.get(output)(analysis=analysis)
     return None
-
-
-def read_whitelist_file(whitelist_path):
-    with open(whitelist_path, 'r') as whitelist_file:
-        whitelist = whitelist_file.read().splitlines()
-    return whitelist
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 """ Panoptes - AWS - Output
 
-Collection of functions to print AWS analysis output.
+Functions to print specific AWS analysis output.
 """
 
 import colorama
