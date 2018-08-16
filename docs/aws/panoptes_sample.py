@@ -1,5 +1,4 @@
 import panoptes
-from pprint import pprint
 
 
 def main():
@@ -8,7 +7,7 @@ def main():
     # PATH_TO_WHITELIST = "/path/to/whitelist.txt"
 
     """
-    REQUIRED: Generate Panoptes AWS auth
+    Generate Panoptes AWS auth
     """
     aws_client = panoptes.aws.authentication.get_client(
         region=MY_REGION,
@@ -16,15 +15,19 @@ def main():
     )
 
     """
-    OPTIONAL: You can read the whitelist from a file
+    OPTIONAL:
+    1- Read the whitelist from a file
+    2- Declare the whitelist manually through a list
     """
-    #whitelist = panoptes.panoptesctl.read_whitelist_file(
+    #
+    # First Way
+    #
+    #whitelist = panoptes.generic.parser.parse_whitelist_file(
     #    whitelist_path=PATH_TO_WHITELIST
     #)
-
-    """
-    OPTIONAL: You can declare the whitelist manually
-    """
+    #
+    # Second Way
+    #
     #whitelist = [
     #    '123.123.123.123/32',
     #    '10.0.0.0/24',
@@ -32,10 +35,11 @@ def main():
     #]
 
     """
-    REQUIRED: Generate the analysis
+    Generate the analysis
     """
     generated_analysis = panoptes.aws.analysis.analyze_security_groups(
         aws_client=aws_client,
+        # Uncomment below if you declared the whitelist
         # whitelist=whitelist,
     )
 
@@ -43,7 +47,7 @@ def main():
     CONGRATULATIONS!!!
     You can do whatever you want with it.
     """
-    pprint(generated_analysis)
+    print(generated_analysis)
 
 
 if __name__ == "__main__":
