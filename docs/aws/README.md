@@ -119,7 +119,7 @@ def main():
     # First Way
     #
     #whitelist = panoptes.generic.parser.parse_whitelist_file(
-    #    whitelist_path="PATH_TO_WHITELIST"
+    #    whitelist_path=PATH_TO_WHITELIST
     #)
     #
     # Second Way
