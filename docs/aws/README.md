@@ -1,5 +1,6 @@
 # Panoptes - AWS
 
+- [Getting Started](README.md#getting-started)
 - [Information](README.md#info)
     - [Dynamic Whitelist](README.md#info-dynamic-whitelist)
     - [Limitations](README.md#info-limitations)
@@ -8,13 +9,39 @@
 - [Integration for Developers](README.md#integrating)
 
 
+
+
+
+<br>
+
+----
+
+## [Getting Started](#getting-started)
+
+-----
+If you want to see the available options:
+```bash
+panoptesctl aws analyze --help
+```
+
+Generate an analysis with human readable output:
+```bash
+panoptesctl aws analyze --region <YOUR_REGION_CODE>
+```
+
+Generate an analysis with YML output and a Named Profile from AWS CLI:
+```bash
+panoptesctl aws analyze --region <YOUR_REGION_CODE> --profile <YOUR_PROFILE> --output yml
+```
+*Check out [AWS Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) to see available region codes*
+
 <br>
 
 ----
 
 ## [Information](#info)
 ### [Dynamic Whitelist](#info-dynamic-whitelist)
-Panoptes generates automatically a list of IP's which it does not consider harmful from the desired cloud provider. Inside AWS, it generates from:
+Panoptes generates automatically a list of IP's which it does not consider harmful from the desired cloud provider. It is generated from the AWS resources below:
 - VPC ranges
 - Subnet ranges
 - Private IPs from EC2 VPC Instances
@@ -24,7 +51,8 @@ Panoptes generates automatically a list of IP's which it does not consider harmf
 <br>
 
 ### [Limitations](#info-limitations)
-The Automatic AWS Whitelist feature can't whitelist *public* and *private* IP's from **EC2 Classic**, so make sure that those instances have an *Elastic IP* attached and their security groups are pointing to the new *Elastic IP* attached instead of the default EC2 Classic ones.
+The Automatic AWS Whitelist feature can't whitelist *public* and *private* IP's from **EC2 Classic**.
+Make sure that those instances have an *Elastic IP* attached and their Security Groups are pointing to the new *Elastic IP*, instead of the default EC2 Classic ones.
 
 <br>
 
@@ -44,7 +72,7 @@ Generate the analysis output
 - **```--output```** : (Default: ```human```) Which kind of output you want the analysis.
     - ```human``` : Colorful human ouput
     - ```json``` : JSON prettified output
-    - ```human``` : YAML prettified output
+    - ```yml``` : YAML prettified output
 
 
 - **```--whitelist```** : Path to [whitelist](../whitelist_example.txt) with declared safe IPs and CIDR
@@ -54,10 +82,10 @@ You need specific IAM permissions to analyze without headaches. There are some w
 
 **```The Fast Way```** : Attach the policy ```ReadOnlyAccess``` to the user/role
 
-**```The "Compliance" Way```** : Create an IAM Policy from [this .json file](aws_analyze_policy.json) and attach it to the user/role
+**```The Compliant Way```** : Create an IAM Policy from [this .json file](aws_analyze_policy.json) and attach it to the user/role
 
 
-##### Example
+##### Usage
 ```sh
 panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output yml --whitelist /path/to/my/whitelist.txt
 ```
@@ -69,7 +97,6 @@ panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output yml
 ## [Integration for Developers](#integrating)
 ```python
 import panoptes
-from pprint import pprint
 
 
 def main():
@@ -78,7 +105,7 @@ def main():
     # PATH_TO_WHITELIST = "/path/to/whitelist.txt"
 
     """
-    REQUIRED: Generate Panoptes AWS auth
+    Generate Panoptes AWS auth
     """
     aws_client = panoptes.aws.authentication.get_client(
         region=MY_REGION,
@@ -86,15 +113,19 @@ def main():
     )
 
     """
-    OPTIONAL: You can read the whitelist from a file
+    OPTIONAL:
+    1- Read the whitelist from a file
+    2- Declare the whitelist manually through a list
     """
-    #whitelist = panoptes.panoptesctl.read_whitelist_file(
-    #    whitelist_path=PATH_TO_WHITELIST
+    #
+    # First Way
+    #
+    #whitelist = panoptes.generic.parser.parse_whitelist_file(
+    #    whitelist_path="PATH_TO_WHITELIST"
     #)
-
-    """
-    OPTIONAL: You can declare the whitelist manually
-    """
+    #
+    # Second Way
+    #
     #whitelist = [
     #    '123.123.123.123/32',
     #    '10.0.0.0/24',
@@ -102,10 +133,11 @@ def main():
     #]
 
     """
-    REQUIRED: Generate the analysis
+    Generate the analysis
     """
     generated_analysis = panoptes.aws.analysis.analyze_security_groups(
         aws_client=aws_client,
+        # Uncomment below if you declared the whitelist
         # whitelist=whitelist,
     )
 
@@ -113,7 +145,7 @@ def main():
     CONGRATULATIONS!!!
     You can do whatever you want with it.
     """
-    pprint(generated_analysis)
+    print(generated_analysis)
 
 
 if __name__ == "__main__":
