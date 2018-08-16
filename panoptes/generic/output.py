@@ -1,10 +1,14 @@
+""" Panoptes - Generic - Output
+Responsible for generic outputs used through Panoptes module
+"""
+
 import json
 import yaml
 
 
 def print_json(analysis):
     """
-    Prints in the screen a prettified JSON version from any analysis
+    Converts the any analysis dictionary into prettified JSON output
     """
     output = json.dumps(
         analysis,
@@ -12,12 +16,11 @@ def print_json(analysis):
         sort_keys=True
     )
     print(output)
-    return None
 
 
 def print_yml(analysis):
     """
-    Prints in the screen an YML version from any analysis
+    Converts the any analysis dictionary into YML output
     """
     output = yaml.dump(
         analysis,
@@ -25,4 +28,3 @@ def print_yml(analysis):
         allow_unicode=True,
     )
     print(output)
-    return None
