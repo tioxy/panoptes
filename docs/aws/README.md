@@ -83,7 +83,7 @@ You need specific IAM permissions to analyze without headaches. There are some w
 **```The Compliant Way```** : Create an IAM Policy from [this .json file](aws_analyze_policy.json) and attach it to the user/role
 
 
-##### Usage
+#### Usage
 ```sh
 panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output yml --whitelist /path/to/my/whitelist.txt
 ```
