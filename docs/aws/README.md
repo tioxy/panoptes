@@ -17,8 +17,6 @@
 ----
 
 ## [Getting Started](#getting-started)
-
------
 If you want to see the available options:
 ```bash
 panoptesctl aws analyze --help
