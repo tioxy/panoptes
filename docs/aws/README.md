@@ -1,12 +1,12 @@
 # Panoptes - AWS
 
 - [Getting Started](README.md#getting-started)
-- [Information](README.md#info)
-    - [Dynamic Whitelist](README.md#info-dynamic-whitelist)
-    - [Limitations](README.md#info-limitations)
-- [Commands](README.md#comm)
-    - [panoptesctl aws analyze](README.md#comm-analyze)
-- [Integration for Developers](README.md#integrating)
+- [Information](README.md#information)
+    - [Dynamic Whitelist](README.md#dynamic-whitelist)
+    - [Limitations](README.md#limitations)
+- [Commands](README.md#commands)
+    - [panoptesctl aws analyze](README.md#panoptesctl-aws-analyze)
+- [Integration for Developers](README.md#integration-for-developers)
 
 
 
@@ -37,8 +37,8 @@ panoptesctl aws analyze --region <YOUR_REGION_CODE> --profile <YOUR_PROFILE> --o
 
 ----
 
-## [Information](#info)
-### [Dynamic Whitelist](#info-dynamic-whitelist)
+## [Information](#information)
+### [Dynamic Whitelist](#dynamic-whitelist)
 Panoptes generates automatically a list of IP's which it does not consider harmful from the desired cloud provider. It is generated from the AWS resources below:
 - VPC ranges
 - Subnet ranges
@@ -48,7 +48,7 @@ Panoptes generates automatically a list of IP's which it does not consider harmf
 
 <br>
 
-### [Limitations](#info-limitations)
+### [Limitations](#limitations)
 The Automatic AWS Whitelist feature can't whitelist *public* and *private* IP's from **EC2 Classic**.
 Make sure that those instances have an *Elastic IP* attached and their Security Groups are pointing to the new *Elastic IP*, instead of the default EC2 Classic ones.
 
@@ -56,9 +56,9 @@ Make sure that those instances have an *Elastic IP* attached and their Security 
 
 ----
 
-## [Commands](#comm)
+## [Commands](#commands)
 
-### [panoptesctl aws analyze](#comm-analyze)
+### [panoptesctl aws analyze](#panoptesctl-aws-analyze)
 Generate the analysis output
 ##### Options
 - **```--region```** : (Required) AWS Region to list the security groups
@@ -92,7 +92,7 @@ panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output yml
 
 ----
 
-## [Integration for Developers](#integrating)
+## [Integration for Developers](#integration-for-developers)
 ```python
 import panoptes
 
