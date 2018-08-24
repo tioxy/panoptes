@@ -7,7 +7,7 @@ direct IAM credentials through CLI.
 import boto3
 
 
-def get_client(region, profile):
+def get_client(region, profile=None):
     """
     Generates a Boto3 session from named profile and region inputs
     """

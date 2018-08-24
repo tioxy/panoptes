@@ -51,7 +51,6 @@ def gcp():
 @click.option(
     '--profile',
     'profile',
-    default='default',
     help='AWS CLI configured profile which will be used',
     metavar='<profile_name>',
 )
@@ -65,7 +64,6 @@ def gcp():
 @click.option(
     '--whitelist',
     'whitelist_path',
-    default=None,
     help='Path to whitelist with declared safe IPs and CIDR',
     metavar='<path>',
 )
