@@ -1,10 +1,13 @@
+""" Panoptes - CLI - AWS
+Responsible for organizing commands from Panoptes AWS CLI
+"""
+
 import click
-import panoptes.aws
 import panoptes.cli
 import panoptes.generic
+import panoptes.aws
 
-
-AWS_AVAILABLE_OUTPUT_OPTIONS = [
+AVAILABLE_OUTPUT_OPTIONS = [
     'human',
     'json',
     'yml',
@@ -33,7 +36,7 @@ AWS_AVAILABLE_OUTPUT_OPTIONS = [
     'output',
     default='human',
     help='Which kind of output you want the analysis',
-    type=click.Choice(AWS_AVAILABLE_OUTPUT_OPTIONS),
+    type=click.Choice(AVAILABLE_OUTPUT_OPTIONS),
 )
 @click.option(
     '--whitelist',
@@ -58,7 +61,7 @@ def aws_analyze_command(region, profile, output, whitelist_path):
         region=region,
         profile=profile,
     )
-    
+
     if aws_client:
         analysis = panoptes.aws.analysis.analyze_security_groups(
             aws_client=aws_client,

@@ -9,5 +9,6 @@ from panoptes import cli
 from panoptes import generic
 from panoptes import panoptesctl
 
+
 if __name__ == "__main__":
     pass

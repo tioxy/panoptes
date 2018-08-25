@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import click
-import panoptes.cli.aws.commands
-import panoptes.cli.gcp.commands
+import panoptes.cli.aws
+import panoptes.cli.gcp
 
 
 @click.group()
@@ -35,8 +35,8 @@ def gcp_group():
 """
 Adding commands to Click Groups
 """
-aws_group.add_command(panoptes.cli.aws.commands.aws_analyze_command)
-gcp_group.add_command(panoptes.cli.gcp.commands.gcp_analyze_command)
+aws_group.add_command(panoptes.cli.aws.aws_analyze_command)
+gcp_group.add_command(panoptes.cli.gcp.gcp_analyze_command)
 
 
 if __name__ == "__main__":

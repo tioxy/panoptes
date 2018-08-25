@@ -1,9 +1,13 @@
+""" Panoptes - CLI - GCP
+Responsible for organizing commands from Panoptes GCP CLI
+"""
+
 import click
 import panoptes.cli
 import panoptes.generic
 
 
-GCP_AVAILABLE_OUTPUT_OPTIONS = [
+AVAILABLE_OUTPUT_OPTIONS = [
     'human',
     'json',
     'yml',
