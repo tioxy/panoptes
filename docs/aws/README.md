@@ -101,7 +101,7 @@ def main():
     MY_REGION = "us-east-1"
     # MY_PROFILE = "default"
     # PATH_TO_WHITELIST = "/path/to/whitelist.txt"
-
+    # MY_SESSION_TOKEN = generate_magic_session_token()
     """
     Generate Panoptes AWS auth
     OBS: Profile is optional. Don't use it if you are running with
@@ -110,7 +110,8 @@ def main():
     """
     aws_client = panoptes.aws.authentication.get_client(
         region=MY_REGION,
-    #    profile=MY_PROFILE,
+        # profile=MY_PROFILE,
+        # session_token=MY_SESSION_TOKEN,
     )
 
     """

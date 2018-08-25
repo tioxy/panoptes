@@ -8,13 +8,14 @@ import boto3
 import panoptes.generic.exceptions
 
 
-def get_client(region, profile=None):
+def get_client(region, profile=None, session_token=None):
     """
     Generates a Boto3 session from named profile and region inputs
     """
     aws_client = boto3.Session(
         profile_name=profile,
         region_name=region,
+        aws_session_token=session_token,
     )
 
     if aws_client.get_credentials():
