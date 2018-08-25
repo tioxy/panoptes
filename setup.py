@@ -28,9 +28,9 @@ setup(
     },
     license='LICENSE',
         install_requires=[
-        'colorama==0.3.9',
-        'boto3==1.7.73',
-        'PyYAML==3.13',
+        'boto3==1.8.1',
         'click==6.7',
+        'colorama==0.3.9',
+        'PyYAML==3.13',
     ],
 )
