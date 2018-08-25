@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 # Package setup definition
 setup(
     name='panoptes',
-    version='0.2.3',
+    version='0.3.0',
     description='The multi cloud security group analyzer',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -23,7 +23,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'panoptesctl = panoptes.panoptesctl:cli',
+            'panoptesctl = panoptes.panoptesctl:main',
         ],
     },
     license='LICENSE',

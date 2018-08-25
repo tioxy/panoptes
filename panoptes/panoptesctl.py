@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 import click
-import panoptes.aws
-import panoptes.generic
+import panoptes.cli.aws.commands
+import panoptes.cli.gcp.commands
 
 
-AVAILABLE_OUTPUT_OPTIONS = [
-    'human',
-    'json',
-    'yml',
-]
 @click.group()
-def cli():
+def main():
     """Welcome to Panoptes - The multi cloud security group analyzer
 
     This project is stored on GitHub and open sourced under Apache 2.0
@@ -21,79 +16,29 @@ def cli():
     pass
 
 
-@cli.group(
+@main.group(
     'aws',
     help='Amazon Web Services'
 )
-def aws():
+def aws_group():
     pass
 
 
-@cli.group(
+@main.group(
     'gcp',
     help='Google Cloud Plataform'
 )
-def gcp():
+def gcp_group():
     pass
 
 
-@aws.command(
-    'analyze',
-    help="Generate the analysis output"
-)
-@click.option(
-    '--region',
-    'region',
-    required=True,
-    help='AWS Region to list the security groups',
-    metavar='<region_id>',
-)
-@click.option(
-    '--profile',
-    'profile',
-    help='AWS CLI configured profile which will be used',
-    metavar='<profile_name>',
-)
-@click.option(
-    '--output',
-    'output',
-    default='human',
-    help='Which kind of output you want the analysis',
-    type=click.Choice(AVAILABLE_OUTPUT_OPTIONS),
-)
-@click.option(
-    '--whitelist',
-    'whitelist_path',
-    help='Path to whitelist with declared safe IPs and CIDR',
-    metavar='<path>',
-)
-def aws_analyze_command(region, profile, output, whitelist_path):
-    aws_output_options = {
-        "human": panoptes.aws.output.print_human,
-        "json": panoptes.generic.output.print_json,
-        "yml": panoptes.generic.output.print_yml,
-    }
-
-    whitelist = []
-    if whitelist_path:
-        whitelist = panoptes.generic.parser.parse_whitelist_file(
-            whitelist_path=whitelist_path
-        )
-
-    aws_client = panoptes.aws.authentication.get_client(
-        region=region,
-        profile=profile,
-    )
-
-    if aws_client:
-        analysis = panoptes.aws.analysis.analyze_security_groups(
-            aws_client=aws_client,
-            whitelist=whitelist,
-        )
-        aws_output_options.get(output)(analysis=analysis)
-    return None
+"""
+Adding commands to Click Groups
+"""
+aws_group.add_command(panoptes.cli.aws.commands.aws_analyze_command)
+gcp_group.add_command(panoptes.cli.gcp.commands.gcp_analyze_command)
 
 
 if __name__ == "__main__":
-    cli()
+    main()
     exit()
