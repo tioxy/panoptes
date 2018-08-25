@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+requests = "*"
+"boto3" = "*"
+pyyaml = "*"
+click = "*"
+colorama = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
