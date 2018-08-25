@@ -4,6 +4,8 @@ Responsible to the entire AWS analysis. Here the dynamic whitelist,
 the logic behind unknown ingress rules and unused security groups are created.
 """
 
+import panoptes.aws.whitelist
+
 
 class AWSAnalysis:
     """
@@ -213,100 +215,18 @@ class AWSAnalysis:
         return unsafe_ingress
 
 
-class AWSWhitelist:
-    """
-    Class used to generate the dynamic whitelist of AWS Resources and consider
-    them not harmful and known resources
-    """
-    def __init__(self, aws_client):
-        self.safe_ips = list(set(self.get_vpc_ranges(aws_client)
-                                 + self.get_subnet_ranges(aws_client)
-                                 + self.get_vpc_instances_ips(aws_client)
-                                 + self.get_elastic_ips(aws_client)))
-
-    def get_vpc_ranges(self, aws_client):
-        """
-        List VPCs CIDR ranges in the account
-        """
-        ec2 = aws_client.client('ec2')
-        boto_vpcs = ec2.describe_vpcs()
-        vpc_ranges = [
-            vpc['CidrBlock'] for vpc in boto_vpcs['Vpcs']
-        ]
-        return vpc_ranges
-
-    def get_subnet_ranges(self, aws_client):
-        """
-        List Subnets CIDR ranges in the account
-        """
-        ec2 = aws_client.client('ec2')
-        boto_subnets = ec2.describe_subnets()
-        subnet_ranges = [
-            subnet['CidrBlock'] for subnet in boto_subnets['Subnets']
-        ]
-        return subnet_ranges
-
-    def get_vpc_instances_ips(self, aws_client):
-        """
-        List Public and Private IPs from EC2 instances inside a VPC in the
-        account
-        """
-        ec2 = aws_client.client('ec2')
-        boto_instances = ec2.describe_instances()
-        vpc_instances_ips = []
-        for instance_obj in boto_instances['Reservations']:
-            for instance in instance_obj['Instances']:
-                for instance_net in instance['NetworkInterfaces']:
-                    if 'Association' in instance_net.keys():
-                        vpc_instances_ips.append(
-                            instance_net['Association']['PublicIp'] + '/32'
-                        )
-                    if 'PrivateIpAddress' in instance_net.keys():
-                        vpc_instances_ips.append(
-                            instance_net['PrivateIpAddress'] + '/32'
-                        )
-                    if 'PrivateIpAddresses' in instance_net.keys():
-                        for priv_ip in instance_net['PrivateIpAddresses']:
-                            if 'Association' in priv_ip.keys():
-                                vpc_instances_ips.append(
-                                    priv_ip['Association']['PublicIp'] + '/32'
-                                )
-                            if 'PrivateIpAddress' in priv_ip.keys():
-                                vpc_instances_ips.append(
-                                    priv_ip['PrivateIpAddress'] + '/32'
-                                )
-        return vpc_instances_ips
-
-    def get_elastic_ips(self, aws_client):
-        """
-        List all Elastic IPs reserved in the account
-        """
-        ec2 = aws_client.client('ec2')
-        boto_elastic_ips = ec2.describe_addresses()
-        elastic_ips = []
-        for elastic_ip in boto_elastic_ips['Addresses']:
-            if 'PrivateIpAddress' in elastic_ip.keys():
-                elastic_ips.append(
-                    elastic_ip['PrivateIpAddress'] + '/32'
-                )
-            elastic_ips.append(
-                elastic_ip['PublicIp'] + '/32'
-            )
-        return elastic_ips
-
-
-def analyze_security_groups(aws_client, whitelist):
+def analyze_security_groups(aws_client, whitelist=[]):
     """
     The main analysis function
 
     Parameters:
-        - whitelist:
-            Type: list
-            Description: List of whitelisted CIDR from optional input file
-
         - aws_client:
             Type: boto3.Session
             Description: Client object from cloud_authentication modules
+
+        - whitelist:
+            Type: list
+            Description: List of whitelisted CIDR from optional input file
 
     DesiredReturn:
             "SecurityGroups": {
@@ -342,9 +262,7 @@ def analyze_security_groups(aws_client, whitelist):
         }
     }
 
-
-    aws_whitelist = AWSWhitelist(aws_client)
-    whitelist += aws_whitelist.safe_ips
+    whitelist += panoptes.aws.whitelist.get_safe_ips(aws_client)
 
     analysis = AWSAnalysis()
     services_attachedgroups = {

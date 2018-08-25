@@ -1,20 +1,11 @@
 #!/usr/bin/env python
 import click
-import panoptes.aws
-
-
-def generate_analysis_output(output, analysis):
-    output_options = {
-        "json": panoptes.aws.output.output_json,
-        "yml": panoptes.aws.output.output_yml,
-        "human": panoptes.aws.output.output_human,
-    }
-    output_options[output](analysis=analysis)
-    return None
+import panoptes.cli.aws
+import panoptes.cli.gcp
 
 
 @click.group()
-def cli():
+def main():
     """Welcome to Panoptes - The multi cloud security group analyzer
 
     This project is stored on GitHub and open sourced under Apache 2.0
@@ -25,84 +16,29 @@ def cli():
     pass
 
 
-@cli.group(
+@main.group(
     'aws',
     help='Amazon Web Services'
 )
-def aws():
+def aws_group():
     pass
 
 
-@cli.group(
+@main.group(
     'gcp',
     help='Google Cloud Plataform'
 )
-def gcp():
+def gcp_group():
     pass
 
 
-@aws.command(
-    'analyze',
-    help="Generate the analysis file"
-)
-@click.option(
-    '--region',
-    'region',
-    required=True,
-    help='AWS Region to list the security groups',
-    metavar='<region_id>',
-)
-@click.option(
-    '--profile',
-    'profile',
-    default='default',
-    help='AWS CLI configured profile which will be used',
-    metavar='<profile_name>',
-)
-@click.option(
-    '--output',
-    'output',
-    default='human',
-    help='Which kind of output you want the analysis',
-    type=click.Choice(['human', 'json', 'yml']),
-)
-@click.option(
-    '--whitelist',
-    'whitelist_path',
-    help='Whitelist with declared safe IPs and CIDR',
-    metavar='<path>',
-)
-def aws_analyze_command(region, profile, output, whitelist_path=None):
-    whitelist = []
-    if whitelist_path:
-        whitelist = read_whitelist_file(
-            whitelist_path=whitelist_path
-        )
-
-    aws_authentication = panoptes.aws.authentication.get_client(
-        region=region,
-        profile=profile,
-    )
-
-    if aws_authentication:
-        aws_client = aws_authentication
-        analysis = panoptes.aws.analysis.analyze_security_groups(
-            aws_client=aws_authentication,
-            whitelist=whitelist,
-        )
-        generate_analysis_output(
-            output=output,
-            analysis=analysis,
-        )
-    return None
-
-
-def read_whitelist_file(whitelist_path):
-    with open(whitelist_path, 'r') as whitelist_file:
-        whitelist = whitelist_file.read().splitlines()
-    return whitelist
+"""
+Adding commands to Click Groups
+"""
+aws_group.add_command(panoptes.cli.aws.aws_analyze_command)
+gcp_group.add_command(panoptes.cli.gcp.gcp_analyze_command)
 
 
 if __name__ == "__main__":
-    cli()
+    main()
     exit()
