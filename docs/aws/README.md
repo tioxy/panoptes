@@ -64,7 +64,7 @@ Generate the analysis output
 - **```--region```** : (Required) AWS Region to list the security groups
 
 
-- **```--profile```** : (Default: ```default```) AWS CLI configured profile which will be used
+- **```--profile```** : AWS CLI configured profile which will be used
 
 
 - **```--output```** : (Default: ```human```) Which kind of output you want the analysis.
@@ -73,7 +73,7 @@ Generate the analysis output
     - ```yml``` : YAML prettified output
 
 
-- **```--whitelist```** : Path to [whitelist](../whitelist_example.txt) with declared safe IPs and CIDR
+- **```--whitelist```** : Path to [whitelist](../samples/whitelist_example.txt) with declared safe IPs and CIDR
 
 #### Requirements
 You need specific IAM permissions to analyze without headaches. There are some ways to give Panoptes permission to analyze content:
@@ -99,32 +99,35 @@ import panoptes
 
 def main():
     MY_REGION = "us-east-1"
-    MY_PROFILE = "default"
+    # MY_PROFILE = "default"
     # PATH_TO_WHITELIST = "/path/to/whitelist.txt"
 
     """
     Generate Panoptes AWS auth
+    OBS: Profile is optional. Don't use it if you are running with
+        - AWS Roles
+        - AWS Access/Secret environment variables
     """
     aws_client = panoptes.aws.authentication.get_client(
         region=MY_REGION,
-        profile=MY_PROFILE,
+    #    profile=MY_PROFILE,
     )
 
     """
-    OPTIONAL:
-    1- Read the whitelist from a file
-    2- Declare the whitelist manually through a list
+    OBS: Whitelist file is optional. You can:
+        1- Read the whitelist from a file
+        2- Declare the whitelist manually through a list
     """
     #
     # First Way
     #
-    #whitelist = panoptes.generic.parser.parse_whitelist_file(
+    #YOUR_WHITELIST = panoptes.generic.parser.parse_whitelist_file(
     #    whitelist_path=PATH_TO_WHITELIST
     #)
     #
     # Second Way
     #
-    #whitelist = [
+    #YOUR_WHITELIST = [
     #    '123.123.123.123/32',
     #    '10.0.0.0/24',
     #    '0.0.0.0/0',
@@ -135,8 +138,7 @@ def main():
     """
     generated_analysis = panoptes.aws.analysis.analyze_security_groups(
         aws_client=aws_client,
-        # Uncomment below if you declared the whitelist
-        # whitelist=whitelist,
+        # whitelist=YOUR_WHITELIST,
     )
 
     """
