@@ -4,20 +4,25 @@ Generates the dynamic whitelist of AWS Resources, considering them not harmful
 and known resources
 """
 
+import concurrent.futures
 
-def get_safe_ips(aws_client):
+
+def list_all_safe_ips(aws_client):
     """
     Function responsible for aggregating all methods and removing duplicates
     """
-    return list(
-                set(
-                    get_vpc_ranges(aws_client)
-                    + get_subnet_ranges(aws_client)
-                    + get_vpc_instance_ips(aws_client)
-                    + get_elastic_ips(aws_client)
-                )
-            )
+    list_all_safe_ips = []
+    whitelisted_resources = {
+        "vpc": get_vpc_ranges,
+        "subnet": get_subnet_ranges,
+        "instance_ips": get_vpc_instance_ips,
+        "elastic_ips": get_elastic_ips
+    }
 
+    for aws_resource, get_function in whitelisted_resources.items():
+        list_all_safe_ips += get_function(aws_client)
+
+    return list(set(list_all_safe_ips))
 
 def get_vpc_ranges(aws_client):
     """
@@ -28,7 +33,7 @@ def get_vpc_ranges(aws_client):
     vpc_ranges = [
         vpc['CidrBlock'] for vpc in boto_vpcs['Vpcs']
     ]
-    return vpc_ranges
+    return list(set(vpc_ranges))
 
 
 def get_subnet_ranges(aws_client):
@@ -40,7 +45,7 @@ def get_subnet_ranges(aws_client):
     subnet_ranges = [
         subnet['CidrBlock'] for subnet in boto_subnets['Subnets']
     ]
-    return subnet_ranges
+    return list(set(subnet_ranges))
 
 
 def get_vpc_instance_ips(aws_client):
@@ -72,7 +77,7 @@ def get_vpc_instance_ips(aws_client):
                             vpc_instances_ips.append(
                                 priv_ip['PrivateIpAddress'] + '/32'
                             )
-    return vpc_instances_ips
+    return list(set(vpc_instances_ips))
 
 
 def get_elastic_ips(aws_client):
@@ -90,7 +95,7 @@ def get_elastic_ips(aws_client):
         elastic_ips.append(
             elastic_ip['PublicIp'] + '/32'
         )
-    return elastic_ips
+    return list(set(elastic_ips))
 
 
 if __name__ == "__main__":
