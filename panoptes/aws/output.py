@@ -4,30 +4,12 @@ Functions to print specific AWS analysis output.
 """
 
 import colorama
-
+import panoptes.generic.output
 
 def print_human(analysis):
     """
     Converts the AWS analysis dictionary into human readable output
     """
-    def generate_info_message(content):
-        return (colorama.Style.RESET_ALL
-                + colorama.Fore.LIGHTCYAN_EX
-                + "INFO: {}".format(content)
-                + colorama.Style.RESET_ALL)
-
-    def generate_warning_message(content):
-        return (colorama.Style.RESET_ALL
-                + colorama.Fore.YELLOW
-                + "WARNING: {}".format(content)
-                + colorama.Style.RESET_ALL)
-
-    def generate_alert_message(content):
-        return (colorama.Style.RESET_ALL
-                + colorama.Fore.LIGHTRED_EX
-                + "ALERT: {}".format(content)
-                + colorama.Style.RESET_ALL)
-
     def generate_section_message(content):
         return (
             colorama.Style.RESET_ALL
@@ -89,7 +71,7 @@ def print_human(analysis):
             print(generate_security_group_message(unused_group))
         print(
             '\n' +
-            generate_warning_message((
+            panoptes.generic.output.generate_warning_message((
                 str(len(unused_groups_list))
                 + " security groups not being used"
             ))
@@ -98,7 +80,9 @@ def print_human(analysis):
         all_attached_msg = (
             "All security groups are attached and being used"
         )
-        print(generate_info_message(all_attached_msg))
+        print(
+            panoptes.generic.output.generate_info_message(all_attached_msg)
+        )
 
     print(
         generate_section_message(
@@ -163,7 +147,7 @@ def print_human(analysis):
         print()
         if warning_rule_count > 0:
             print(
-                generate_warning_message((
+                panoptes.generic.output.generate_warning_message((
                     str(warning_rule_count)
                     + " rules found with unknown IPs"
                 ))
@@ -171,7 +155,7 @@ def print_human(analysis):
 
         if alert_rule_count > 0:
             print(
-                generate_alert_message((
+                panoptes.generic.output.generate_alert_message((
                     str(alert_rule_count)
                     + " rules opened to the world/all traffic enabled"
                 ))
@@ -180,7 +164,9 @@ def print_human(analysis):
         all_attached_msg = (
             "All security groups have safe rules"
         )
-        print(generate_info_message(all_attached_msg))
+        print(
+            panoptes.generic.output.generate_info_message(all_attached_msg)
+        )
 
     return None
 

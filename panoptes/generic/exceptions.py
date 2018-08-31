@@ -1,4 +1,4 @@
-""" Panoptes - Exceptions
+""" Panoptes - Generic - Exceptions
 
 Just a collection of custom exceptions used to handle errors
 """
