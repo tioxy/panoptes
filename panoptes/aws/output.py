@@ -6,20 +6,11 @@ Functions to print specific AWS analysis output.
 import colorama
 import panoptes.generic.output
 
+
 def print_human(analysis):
     """
     Converts the AWS analysis dictionary into human readable output
     """
-    def generate_section_message(content):
-        return (
-            colorama.Style.RESET_ALL
-            + "\n\n\n"
-            + colorama.Style.BRIGHT
-            + colorama.Fore.LIGHTGREEN_EX
-            + content
-            + colorama.Style.RESET_ALL
-        )
-
     def generate_ingress_message(protocol, range, cidr_ip, color):
         return (
             colorama.Style.RESET_ALL
@@ -49,49 +40,45 @@ def print_human(analysis):
 
     colorama.init()
     print(
-        colorama.Style.RESET_ALL
-        + colorama.Style.BRIGHT
-        + colorama.Fore.LIGHTGREEN_EX
-        + """
-=============================================================
-||                                                         ||
-||                  PANOPTES AWS Analysis                  ||
-||                                                         ||
-=============================================================
-    """)
+        panoptes.generic.output.generate_header_message(
+            "PANOPTES AWS Analysis"
+        )
+    )
 
+    print()
     print(
-        generate_section_message(
-            "01. UNUSED SECURITY GROUPS"
+        panoptes.generic.output.generate_section_message(
+            "01. UNUSED SECURITY GROUPS",
         )
     )
 
     if unused_groups_list:
+        unused_groups_amount = len(unused_groups_list)
         for unused_group in unused_groups_list:
             print(generate_security_group_message(unused_group))
+        print()
         print(
-            '\n' +
-            panoptes.generic.output.generate_warning_message((
-                str(len(unused_groups_list))
-                + " security groups not being used"
-            ))
+            panoptes.generic.output.generate_warning_message(
+                f"{unused_groups_amount} security groups not being used"
+            )
         )
     else:
-        all_attached_msg = (
-            "All security groups are attached and being used"
-        )
         print(
-            panoptes.generic.output.generate_info_message(all_attached_msg)
+            panoptes.generic.output.generate_info_message(
+                "All security groups are attached and being used"
+            )
         )
 
+    print()
     print(
-        generate_section_message(
+        panoptes.generic.output.generate_section_message(
             "02. SECURITY GROUPS WITH UNSAFE INGRESS RULES"
         )
     )
     if unsafe_groups_list:
         alert_rule_count = 0
         warning_rule_count = 0
+
         for unsafe_group in unsafe_groups_list:
             print(generate_security_group_message(unsafe_group))
             for ingress in unsafe_group['UnsafePorts']:
@@ -145,27 +132,24 @@ def print_human(analysis):
             print()
 
         print()
-        if warning_rule_count > 0:
+        if warning_rule_count:
             print(
-                panoptes.generic.output.generate_warning_message((
-                    str(warning_rule_count)
-                    + " rules found with unknown IPs"
-                ))
+                panoptes.generic.output.generate_warning_message(
+                    f"{warning_rule_count} rules found with unknown IPs"
+                )
             )
 
-        if alert_rule_count > 0:
+        if alert_rule_count:
             print(
-                panoptes.generic.output.generate_alert_message((
-                    str(alert_rule_count)
-                    + " rules opened to the world/all traffic enabled"
-                ))
+                panoptes.generic.output.generate_alert_message(
+                    f"{alert_rule_count} rules opened to the world/all traffic enabled"
+                )
             )
     else:
-        all_attached_msg = (
-            "All security groups have safe rules"
-        )
         print(
-            panoptes.generic.output.generate_info_message(all_attached_msg)
+            panoptes.generic.output.generate_info_message(
+                "All security groups have safe rules"
+            )
         )
 
     return None
