@@ -7,7 +7,7 @@ import panoptes.cli
 import panoptes.generic
 
 
-AVAILABLE_OUTPUT_OPTIONS = [
+GCP_AVAILABLE_OUTPUT_OPTIONS = [
     'human',
     'json',
     'yml',
@@ -24,5 +24,4 @@ def gcp_analyze_command():
 
 
 if __name__ == "__main__":
-
     pass

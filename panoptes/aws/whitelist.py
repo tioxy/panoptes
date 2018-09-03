@@ -4,8 +4,6 @@ Generates the dynamic whitelist of AWS Resources, considering them not harmful
 and known resources
 """
 
-import concurrent.futures
-
 
 def list_all_safe_ips(aws_client):
     """
@@ -19,7 +17,7 @@ def list_all_safe_ips(aws_client):
         "elastic_ips": get_elastic_ips
     }
 
-    for aws_resource, get_function in whitelisted_resources.items():
+    for _, get_function in whitelisted_resources.items():
         list_all_safe_ips += get_function(aws_client)
 
     return list(set(list_all_safe_ips))

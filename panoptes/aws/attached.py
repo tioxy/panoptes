@@ -24,7 +24,7 @@ def list_all_attached_secgroups(aws_client):
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         running_workers = []
-        for aws_service, list_function in services_with_security_groups.items():
+        for _, list_function in services_with_security_groups.items():
             running_workers.append(executor.submit(list_function, aws_client))
 
         for future in concurrent.futures.as_completed(running_workers):

@@ -7,7 +7,7 @@ import panoptes.cli
 import panoptes.generic
 import panoptes.aws
 
-AVAILABLE_OUTPUT_OPTIONS = [
+AWS_AVAILABLE_OUTPUT_OPTIONS = [
     'human',
     'json',
     'yml',
@@ -36,7 +36,7 @@ AVAILABLE_OUTPUT_OPTIONS = [
     'output',
     default='human',
     help='Which kind of output you want the analysis',
-    type=click.Choice(AVAILABLE_OUTPUT_OPTIONS),
+    type=click.Choice(AWS_AVAILABLE_OUTPUT_OPTIONS),
 )
 @click.option(
     '--whitelist',
@@ -45,6 +45,10 @@ AVAILABLE_OUTPUT_OPTIONS = [
     metavar='<path>',
 )
 def aws_analyze_command(region, profile, output, whitelist_path):
+    """
+    This function is called when the user types
+    "panoptes aws analyze"
+    """
     aws_output_options = {
         "human": panoptes.aws.output.print_human,
         "json": panoptes.generic.output.print_json,
@@ -68,7 +72,6 @@ def aws_analyze_command(region, profile, output, whitelist_path):
             whitelist=whitelist,
         )
         aws_output_options.get(output)(analysis=analysis)
-    return None
 
 
 if __name__ == "__main__":
