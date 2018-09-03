@@ -4,6 +4,7 @@ Responsible to the entire AWS analysis. Here the dynamic whitelist,
 the logic behind unknown ingress rules and unused security groups are created.
 """
 
+from datetime import datetime
 import panoptes.aws.whitelist
 import panoptes.aws.attached
 
@@ -93,6 +94,8 @@ def analyze_security_groups(aws_client, whitelist=[]):
                         ]
                     },
                 ],
+                "StartedAt": str[ISO 8601 Date],
+                "FinishedAt": str[ISO 8601 Date],
             }
     """
     response = {
@@ -100,7 +103,11 @@ def analyze_security_groups(aws_client, whitelist=[]):
             'UnusedGroups': [],
             'UnsafeGroups': [],
         }
+        'StartedAt': "",
+        'FinishedAt': "",
     }
+
+    response['StartedAt'] = datetime.datetime.now().isoformat()
 
     whitelist += panoptes.aws.whitelist.list_all_safe_ips(aws_client)
     all_security_groups = aws_client.client('ec2').describe_security_groups()['SecurityGroups']
@@ -120,8 +127,8 @@ def analyze_security_groups(aws_client, whitelist=[]):
 
         # Validating if group is unsafe
         unsafe_ingress_entries = []
-        for ingress_entry in security_group["IpPermissions"]:
-            for allowed_ip in ingress_entry["IpRanges"]:
+        for ingress_entry in security_group['IpPermissions']:
+            for allowed_ip in ingress_entry['IpRanges']:
                 if allowed_ip['CidrIp'] not in whitelist:
                     unsafe_ingress_entries.append(
                         generate_unsafe_ingress_entry(
@@ -136,6 +143,9 @@ def analyze_security_groups(aws_client, whitelist=[]):
                     unsafe_ingress_entries=unsafe_ingress_entries,
                 )
             )
+
+    response['FinishedAt'] = datetime.datetime.now().isoformat()
+
     return response
 
 
