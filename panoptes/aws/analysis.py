@@ -102,12 +102,12 @@ def analyze_security_groups(aws_client, whitelist=[]):
         'SecurityGroups': {
             'UnusedGroups': [],
             'UnsafeGroups': [],
-        }
+        },
         'StartedAt': "",
         'FinishedAt': "",
     }
 
-    response['StartedAt'] = datetime.datetime.now().isoformat()
+    response['StartedAt'] = datetime.now().isoformat()
 
     whitelist += panoptes.aws.whitelist.list_all_safe_ips(aws_client)
     all_security_groups = aws_client.client('ec2').describe_security_groups()['SecurityGroups']
@@ -144,7 +144,7 @@ def analyze_security_groups(aws_client, whitelist=[]):
                 )
             )
 
-    response['FinishedAt'] = datetime.datetime.now().isoformat()
+    response['FinishedAt'] = datetime.now().isoformat()
 
     return response
 
