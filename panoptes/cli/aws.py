@@ -71,7 +71,7 @@ def aws_analyze_command(region, profile, output, whitelist_path):
             aws_client=aws_client,
             whitelist=whitelist,
         )
-        aws_output_options.get(output)(analysis=analysis)
+        print(aws_output_options.get(output)(analysis=analysis))
 
 
 if __name__ == "__main__":

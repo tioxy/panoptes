@@ -7,6 +7,11 @@ import colorama
 import panoptes.generic.output
 
 
+ALL_TRAFFIC_PROTOCOL = "-1"
+PUBLIC_CIDR = "0.0.0.0/0"
+COLOR_WARNING = colorama.Fore.LIGHTYELLOW_EX
+COLOR_ALERT = colorama.Fore.LIGHTRED_EX
+
 def print_human(analysis):
     """
     Converts the AWS analysis dictionary into human readable output
@@ -35,124 +40,138 @@ def print_human(analysis):
             + colorama.Style.RESET_ALL
         )
 
+    human_output = ""
     unused_groups_list = analysis['SecurityGroups']['UnusedGroups']
     unsafe_groups_list = analysis['SecurityGroups']['UnsafeGroups']
 
     colorama.init()
-    print(
+
+    human_output += (
         panoptes.generic.output.generate_header_message(
             "PANOPTES AWS Analysis"
         )
+        + "\n"
     )
 
-    print()
-    print(
-        panoptes.generic.output.generate_section_message(
+    human_output += (
+        2 * "\n"
+        + panoptes.generic.output.generate_section_message(
             "01. UNUSED SECURITY GROUPS",
         )
+        + "\n"
     )
 
     if unused_groups_list:
-        unused_groups_amount = len(unused_groups_list)
         for unused_group in unused_groups_list:
-            print(generate_security_group_message(unused_group))
-        print()
-        print(
-            panoptes.generic.output.generate_warning_message(
-                f"{unused_groups_amount} security groups not being used"
+            human_output += (
+                generate_security_group_message(unused_group)
+                + "\n"
             )
+        human_output += (
+            "\n"
+            + panoptes.generic.output.generate_warning_message(
+                f"{len(unused_groups_list)} security groups not being used"
+            )
+            + "\n"
         )
     else:
-        print(
-            panoptes.generic.output.generate_info_message(
+        human_output += (
+            "\n"
+            + panoptes.generic.output.generate_info_message(
                 "All security groups are attached and being used"
             )
+            + "\n"
         )
 
-    print()
-    print(
-        panoptes.generic.output.generate_section_message(
+    human_output += (
+        2 * "\n"
+        + panoptes.generic.output.generate_section_message(
             "02. SECURITY GROUPS WITH UNSAFE INGRESS RULES"
         )
+        + "\n"
     )
     if unsafe_groups_list:
         alert_rule_count = 0
         warning_rule_count = 0
 
         for unsafe_group in unsafe_groups_list:
-            print(generate_security_group_message(unsafe_group))
+            human_output += (
+                generate_security_group_message(unsafe_group)
+                + "\n"
+            )
             for ingress in unsafe_group['UnsafePorts']:
-                range = None
-                protocol = None
-                cidr_ip = None
-                color = None
+                cidr_ip = ingress['CidrIp']
+                protocol = ingress['IpProtocol']
+                range = 'All'
+                color = colorama.Fore.LIGHTYELLOW_EX
 
+                # Making range values prettier
                 if (
                     'FromPort' in ingress.keys() or
                     'ToPort' in ingress.keys()
                 ):
                     if ingress['FromPort'] == ingress["ToPort"]:
-                        range = str(ingress['FromPort'])
+                        range = (
+                            f"{ingress['FromPort']}"
+                        )
                     else:
-                        range = (str(ingress['FromPort'])
-                                 + " - "
-                                 + str(ingress['ToPort']))
+                        range = (
+                            f"{ingress['FromPort']} - {ingress['ToPort']}"
+                        )
 
+                # ALERT if All Traffic protocol is enabled
                 if 'IpProtocol' in ingress.keys():
-                    if ingress['IpProtocol'] == '-1':
+                    if ingress['IpProtocol'] == ALL_TRAFFIC_PROTOCOL:
+                        color = COLOR_ALERT
                         protocol = 'All'
-                        range = 'All'
-                        color = colorama.Fore.LIGHTRED_EX
-                    elif (
-                        ingress['IpProtocol'] == 'tcp' or
-                        ingress['IpProtocol'] == 'udp' or
-                        ingress['IpProtocol'] == 'icmp'
-                    ):
+                    # Making protocol names prettier
+                    elif ingress['IpProtocol'] in ['tcp', 'udp', 'icmp']:
                         protocol = ingress['IpProtocol'].upper()
-                    else:
-                        protocol = str(ingress['IpProtocol'])
 
-                if 'CidrIp' in ingress.keys():
-                    cidr_ip = ingress['CidrIp']
-                    if cidr_ip == "0.0.0.0/0":
-                        color = colorama.Fore.LIGHTRED_EX
+                # ALERT if IP is public
+                if ingress['CidrIp'] == PUBLIC_CIDR:
+                    color = COLOR_ALERT
 
-                if color is None:
-                    color = colorama.Fore.LIGHTYELLOW_EX
+                if color is COLOR_WARNING:
                     warning_rule_count += 1
-                elif color is colorama.Fore.LIGHTRED_EX:
+                elif color is COLOR_ALERT:
                     alert_rule_count += 1
 
-                print(generate_ingress_message(
-                    protocol=protocol,
-                    cidr_ip=cidr_ip,
-                    range=range,
-                    color=color,
-                ))
-            print()
+                human_output += (
+                    generate_ingress_message(
+                        protocol=protocol,
+                        cidr_ip=cidr_ip,
+                        range=range,
+                        color=color,
+                    )
+                    + "\n"
+                )
+            human_output += "\n"
 
-        print()
         if warning_rule_count:
-            print(
+            human_output += (
                 panoptes.generic.output.generate_warning_message(
                     f"{warning_rule_count} rules found with unknown IPs"
+                    + "\n"
                 )
             )
 
         if alert_rule_count:
-            print(
+            human_output += (
                 panoptes.generic.output.generate_alert_message(
-                    f"{alert_rule_count} rules opened to the world/all traffic enabled"
+                    f"{alert_rule_count} rules public/all traffic enabled"
+                    + "\n"
                 )
             )
     else:
-        print(
+        human_output += (
             panoptes.generic.output.generate_info_message(
                 "All security groups have safe rules"
+                + "\n"
             )
         )
 
-    return None
+    return human_output
 
 
 if __name__ == "__main__":
