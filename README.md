@@ -39,7 +39,7 @@ Generate an AWS analysis with an YML output and a Named Profile from AWS CLI:
 ```bash
 panoptesctl aws analyze --region <YOUR_REGION_CODE> --profile <YOUR_PROFILE> --output yml
 ```
-*Check out [AWS Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) to see available region codes*
+*Check out [AWS Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions) to see available region codes*
 
 
 <br>
