@@ -31,6 +31,7 @@ setup(
     long_description=long_description,
     name='panoptes',
     packages=find_packages(),
+    python_requires='>=3.6',
     url='https://github.com/tioxy/panoptes',
-    version='0.3.1',
+    version='0.4.0',
 )
