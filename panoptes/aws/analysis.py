@@ -4,9 +4,13 @@ Responsible to the entire AWS analysis. Here the dynamic whitelist,
 the logic behind unknown ingress rules and unused security groups are created.
 """
 
-from datetime import datetime
 import panoptes.aws.whitelist
 import panoptes.aws.attached
+import panoptes.generic.analysis
+import boto3
+
+
+CLOUD_PROVIDER = "aws"
 
 
 def generate_unused_secgroup_entry(security_group):
@@ -26,6 +30,7 @@ def generate_unused_secgroup_entry(security_group):
     }
     return unused_group
 
+
 def generate_unsafe_secgroup_entry(security_group, unsafe_ingress_entries):
     """
     Generates a dictionary from an unsafe security group, receiving all
@@ -39,6 +44,7 @@ def generate_unsafe_secgroup_entry(security_group, unsafe_ingress_entries):
         "UnsafePorts": unsafe_ingress_entries,
     }
     return unsafe_group
+
 
 def generate_unsafe_ingress_entry(ingress_entry, unsafe_ip):
     """
@@ -56,6 +62,10 @@ def generate_unsafe_ingress_entry(ingress_entry, unsafe_ip):
     return unsafe_ingress
 
 
+def get_current_session_arn(aws_client):
+    return boto3.client('sts').get_caller_identity()['Arn']
+
+
 def analyze_security_groups(aws_client, whitelist=[]):
     """
     The main analysis function
@@ -70,6 +80,15 @@ def analyze_security_groups(aws_client, whitelist=[]):
             Description: List of whitelisted CIDR from optional input file
 
     DesiredReturn:
+        {
+            "AnalysisMetadata": {
+                "StartedAt": str[ISO 8601 Date],
+                "FinishedAt": str[ISO 8601 Date],
+                "CloudProvider": {
+                    "Name": str,
+                    "Auth": str,
+                },
+            },
             "SecurityGroups": {
                 "UnusedGroups": [
                     {
@@ -94,20 +113,24 @@ def analyze_security_groups(aws_client, whitelist=[]):
                         ]
                     },
                 ],
-                "StartedAt": str[ISO 8601 Date],
-                "FinishedAt": str[ISO 8601 Date],
-            }
+            },
+        }
     """
     response = {
         'SecurityGroups': {
             'UnusedGroups': [],
             'UnsafeGroups': [],
         },
-        'StartedAt': "",
-        'FinishedAt': "",
+        'AnalysisMetadata': {
+            'StartedAt': '',
+            'FinishedAt': '',
+            'CloudProvider': {
+                'Name': '',
+                'Auth': '',
+            },
+        },
     }
-
-    response['StartedAt'] = datetime.now().isoformat()
+    response['AnalysisMetadata']['StartedAt'] = panoptes.generic.analysis.get_current_time()
 
     whitelist += panoptes.aws.whitelist.list_all_safe_ips(aws_client)
     all_security_groups = aws_client.client('ec2').describe_security_groups()['SecurityGroups']
@@ -144,7 +167,9 @@ def analyze_security_groups(aws_client, whitelist=[]):
                 )
             )
 
-    response['FinishedAt'] = datetime.now().isoformat()
+    response['AnalysisMetadata']['FinishedAt'] = panoptes.generic.analysis.get_current_time()
+    response['AnalysisMetadata']['CloudProvider']['Name'] = CLOUD_PROVIDER
+    response['AnalysisMetadata']['CloudProvider']['Auth'] = get_current_session_arn(aws_client)
 
     return response
 
