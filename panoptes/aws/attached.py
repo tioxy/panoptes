@@ -12,19 +12,19 @@ def list_all_attached_secgroups(aws_client):
     Lists and groups all attached security groups within AWS resources
     """
     all_attached_groups = []
-    services_with_security_groups = {
-        "ec2": list_ec2_attached_secgroups,
-        "rds": list_rds_attached_secgroups,
-        "elb": list_elb_attached_secgroups,
-        "elbv2": list_elbv2_attached_secgroups,
-        "lambda": list_lambda_attached_secgroups,
-        "ec": list_elasticache_attached_secgroups,
-        "ecs": list_ecs_attached_secgroups,
-    }
+    services_with_security_groups = [
+        list_ec2_attached_secgroups,
+        list_rds_attached_secgroups,
+        list_elb_attached_secgroups,
+        list_elbv2_attached_secgroups,
+        list_lambda_attached_secgroups,
+        list_elasticache_attached_secgroups,
+        list_ecs_attached_secgroups,
+    ]
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
         running_workers = []
-        for _, list_function in services_with_security_groups.items():
+        for list_function in services_with_security_groups:
             running_workers.append(executor.submit(list_function, aws_client))
 
         for future in concurrent.futures.as_completed(running_workers):
@@ -175,9 +175,7 @@ def list_ecs_attached_secgroups(aws_client):
             for ecs_obj in boto_ecs['services']:
                 if 'networkConfiguration' in ecs_obj.keys():
                     for security_group in (
-                            ecs_obj['networkConfiguration']
-                                   ['awsvpcConfiguration']
-                                   ['securityGroups']
+                        ecs_obj['networkConfiguration']['awsvpcConfiguration']['securityGroups']
                     ):
                         ecs_attached_groups.append(
                             security_group

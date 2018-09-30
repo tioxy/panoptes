@@ -106,10 +106,7 @@ def print_human(analysis):
                 color = colorama.Fore.LIGHTYELLOW_EX
 
                 # Making range values prettier
-                if (
-                    'FromPort' in ingress.keys() or
-                    'ToPort' in ingress.keys()
-                ):
+                if 'FromPort' in ingress.keys() or 'ToPort' in ingress.keys():
                     if ingress['FromPort'] == ingress["ToPort"]:
                         range = (
                             f"{ingress['FromPort']}"
