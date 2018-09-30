@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import click
+import pkg_resources
 import panoptes.cli.aws
 import panoptes.cli.gcp
-import pkg_resources
 
 
 @click.group()
