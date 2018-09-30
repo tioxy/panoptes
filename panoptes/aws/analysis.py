@@ -4,6 +4,7 @@ Responsible to the entire AWS analysis. Here the dynamic whitelist,
 the logic behind unknown ingress rules and unused security groups are created.
 """
 
+import panoptes.aws.authentication
 import panoptes.aws.whitelist
 import panoptes.aws.attached
 import panoptes.generic.analysis
@@ -62,10 +63,6 @@ def generate_unsafe_ingress_entry(ingress_entry, unsafe_ip):
     return unsafe_ingress
 
 
-def get_current_session_arn(aws_client):
-    return boto3.client('sts').get_caller_identity()['Arn']
-
-
 def analyze_security_groups(aws_client, whitelist=[]):
     """
     The main analysis function
@@ -81,7 +78,7 @@ def analyze_security_groups(aws_client, whitelist=[]):
 
     DesiredReturn:
         {
-            "AnalysisMetadata": {
+            "Metadata": {
                 "StartedAt": str[ISO 8601 Date],
                 "FinishedAt": str[ISO 8601 Date],
                 "CloudProvider": {
@@ -121,7 +118,7 @@ def analyze_security_groups(aws_client, whitelist=[]):
             'UnusedGroups': [],
             'UnsafeGroups': [],
         },
-        'AnalysisMetadata': {
+        'Metadata': {
             'StartedAt': '',
             'FinishedAt': '',
             'CloudProvider': {
@@ -130,7 +127,7 @@ def analyze_security_groups(aws_client, whitelist=[]):
             },
         },
     }
-    response['AnalysisMetadata']['StartedAt'] = panoptes.generic.analysis.get_current_time()
+    response['Metadata']['StartedAt'] = panoptes.generic.analysis.get_current_time()
 
     whitelist += panoptes.aws.whitelist.list_all_safe_ips(aws_client)
     all_security_groups = aws_client.client('ec2').describe_security_groups()['SecurityGroups']
@@ -167,9 +164,9 @@ def analyze_security_groups(aws_client, whitelist=[]):
                 )
             )
 
-    response['AnalysisMetadata']['FinishedAt'] = panoptes.generic.analysis.get_current_time()
-    response['AnalysisMetadata']['CloudProvider']['Name'] = CLOUD_PROVIDER
-    response['AnalysisMetadata']['CloudProvider']['Auth'] = get_current_session_arn(aws_client)
+    response['Metadata']['FinishedAt'] = panoptes.generic.analysis.get_current_time()
+    response['Metadata']['CloudProvider']['Name'] = CLOUD_PROVIDER
+    response['Metadata']['CloudProvider']['Auth'] = panoptes.aws.authentication.get_current_session_arn(aws_client)
 
     return response
 

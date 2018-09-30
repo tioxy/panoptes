@@ -17,14 +17,19 @@ def get_client(region, profile=None, session_token=None):
         region_name=region,
         aws_session_token=session_token,
     )
-
-    if aws_client.get_credentials():
-        return aws_client
-    else:
+    if not aws_client.get_credentials():
         raise panoptes.generic.exceptions.PanoptesAuthError(
             "Panoptes could not authenticate to AWS. "
             "Check if your credentials exist and work."
         )
+    return aws_client
+
+
+def get_current_session_arn(aws_client):
+    """
+    Get ARN from the current session
+    """
+    return aws_client.client('sts').get_caller_identity()['Arn']
 
 
 if __name__ == "__main__":
