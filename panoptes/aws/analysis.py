@@ -19,15 +19,11 @@ def generate_unused_secgroup_entry(security_group):
     Generates a dictionary from an unused security group to the analysis
     response
     """
-    if 'VpcId' not in security_group.keys():
-        vpc_id = 'no-vpc'
-    else:
-        vpc_id = security_group['VpcId']
     unused_group = {
         'GroupName': security_group['GroupName'],
         'GroupId': security_group['GroupId'],
         'Description': security_group['Description'],
-        'VpcId': vpc_id,
+        'VpcId': security_group.get('VpcId') or 'no-vpc',
     }
     return unused_group
 
