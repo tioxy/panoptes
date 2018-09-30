@@ -20,8 +20,8 @@ setup(
         ],
     },
     install_requires=[
-        'boto3==1.8.1',
-        'click==6.7',
+        'boto3==1.9.14',
+        'click==7.0',
         'colorama==0.3.9',
         'PyYAML==3.13',
     ],
