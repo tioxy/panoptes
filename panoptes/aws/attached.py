@@ -22,7 +22,7 @@ def list_all_attached_secgroups(aws_client):
         "ecs": list_ecs_attached_secgroups,
     }
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
         running_workers = []
         for _, list_function in services_with_security_groups.items():
             running_workers.append(executor.submit(list_function, aws_client))
