@@ -2,6 +2,7 @@
 import click
 import panoptes.cli.aws
 import panoptes.cli.gcp
+import pkg_resources
 
 
 @click.group()
@@ -30,6 +31,14 @@ def aws_group():
 )
 def gcp_group():
     pass
+
+
+@main.command(
+    'version',
+    help='Module version'
+)
+def version_command():
+    print(pkg_resources.get_distribution("panoptes").version)
 
 
 """
