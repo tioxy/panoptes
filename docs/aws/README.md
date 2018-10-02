@@ -6,6 +6,7 @@
     - [Limitations](README.md#limitations)
 - [Commands](README.md#commands)
     - [panoptesctl aws analyze](README.md#panoptesctl-aws-analyze)
+    - [panoptesctl version](README.md#panoptesctl-version)
 - [Integration for Developers](README.md#integration-for-developers)
 
 
@@ -88,6 +89,10 @@ You need specific IAM permissions to analyze without headaches. There are some w
 panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output yml --whitelist /path/to/my/whitelist.txt
 ```
 
+### [panoptesctl version](#panoptesctl-version)
+Show Panoptes version
+
+
 <br>
 
 ----
@@ -108,7 +113,7 @@ def main():
         - AWS Roles
         - AWS Access/Secret environment variables
     """
-    aws_client = panoptes.aws.authentication.get_client(
+    aws_session = panoptes.aws.authentication.create_session(
         region=MY_REGION,
         # profile=MY_PROFILE,
         # session_token=MY_SESSION_TOKEN,
@@ -119,15 +124,17 @@ def main():
         1- Read the whitelist from a file
         2- Declare the whitelist manually through a list
     """
-    #
-    # First Way
-    #
+
+
+    """
+    1st Way
+    """
     #YOUR_WHITELIST = panoptes.generic.parser.parse_whitelist_file(
     #    whitelist_path=PATH_TO_WHITELIST
     #)
-    #
-    # Second Way
-    #
+    """
+    2nd Way
+    """
     #YOUR_WHITELIST = [
     #    '123.123.123.123/32',
     #    '10.0.0.0/24',
@@ -138,7 +145,7 @@ def main():
     Generate the analysis
     """
     generated_analysis = panoptes.aws.analysis.analyze_security_groups(
-        aws_client=aws_client,
+        session=aws_session,
         # whitelist=YOUR_WHITELIST,
     )
 
