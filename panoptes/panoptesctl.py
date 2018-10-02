@@ -35,7 +35,7 @@ def gcp_group():
 
 @main.command(
     'version',
-    help='Module version'
+    help='Show Panoptes version'
 )
 def version_command():
     print(pkg_resources.get_distribution("panoptes").version)
