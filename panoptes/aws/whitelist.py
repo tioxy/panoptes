@@ -4,29 +4,37 @@ Generates the dynamic whitelist of AWS Resources, considering them not harmful
 and known resources
 """
 
+import panoptes.aws.authentication
+import concurrent.futures
+import boto3
 
-def list_all_safe_ips(aws_client):
+
+def list_all_safe_ips(session):
     """
     Function responsible for aggregating all methods and removing duplicates
     """
-    list_all_safe_ips = []
-    whitelisted_resources = {
-        "vpc": get_vpc_ranges,
-        "subnet": get_subnet_ranges,
-        "instance_ips": get_vpc_instance_ips,
-        "elastic_ips": get_elastic_ips
-    }
+    all_safe_ips = []
+    boto_clients = panoptes.aws.authentication.get_boto_clients(session)
+    resources_to_whitelist = [
+        (get_vpc_ranges, boto_clients['ec2']),
+        (get_subnet_ranges, boto_clients['ec2']),
+        (get_vpc_instance_ips, boto_clients['ec2']),
+        (get_elastic_ips, boto_clients['ec2']),
+    ]
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        running_workers = []
+        for whitelist_function in resources_to_whitelist:
+            running_workers.append(executor.submit(*whitelist_function))
 
-    for _, get_function in whitelisted_resources.items():
-        list_all_safe_ips += get_function(aws_client)
+        for future in concurrent.futures.as_completed(running_workers):
+            all_safe_ips += future.result()
+    return list(set(all_safe_ips))
 
-    return list(set(list_all_safe_ips))
 
-def get_vpc_ranges(aws_client):
+def get_vpc_ranges(ec2):
     """
     List VPCs CIDR ranges in the account
     """
-    ec2 = aws_client.client('ec2')
     boto_vpcs = ec2.describe_vpcs()
     vpc_ranges = [
         vpc['CidrBlock'] for vpc in boto_vpcs['Vpcs']
@@ -34,11 +42,10 @@ def get_vpc_ranges(aws_client):
     return list(set(vpc_ranges))
 
 
-def get_subnet_ranges(aws_client):
+def get_subnet_ranges(ec2):
     """
     List Subnets CIDR ranges in the account
     """
-    ec2 = aws_client.client('ec2')
     boto_subnets = ec2.describe_subnets()
     subnet_ranges = [
         subnet['CidrBlock'] for subnet in boto_subnets['Subnets']
@@ -46,12 +53,11 @@ def get_subnet_ranges(aws_client):
     return list(set(subnet_ranges))
 
 
-def get_vpc_instance_ips(aws_client):
+def get_vpc_instance_ips(ec2):
     """
     List Public and Private IPs from EC2 instances inside a VPC in the
     account
     """
-    ec2 = aws_client.client('ec2')
     boto_instances = ec2.describe_instances()
     vpc_instances_ips = []
     for instance_obj in boto_instances['Reservations']:
@@ -78,11 +84,10 @@ def get_vpc_instance_ips(aws_client):
     return list(set(vpc_instances_ips))
 
 
-def get_elastic_ips(aws_client):
+def get_elastic_ips(ec2):
     """
     List all Elastic IPs reserved in the account
     """
-    ec2 = aws_client.client('ec2')
     boto_elastic_ips = ec2.describe_addresses()
     elastic_ips = []
     for elastic_ip in boto_elastic_ips['Addresses']:
