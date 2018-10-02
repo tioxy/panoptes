@@ -25,7 +25,7 @@ def get_client(region, profile=None, session_token=None):
     return aws_client
 
 
-def get_current_session_arn(aws_client):
+def get_current_session_info(aws_client):
     """
     Get ARN from the current session
     """

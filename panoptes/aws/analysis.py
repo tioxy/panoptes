@@ -162,7 +162,7 @@ def analyze_security_groups(aws_client, whitelist=[]):
 
     response['Metadata']['FinishedAt'] = panoptes.generic.analysis.get_current_time()
     response['Metadata']['CloudProvider']['Name'] = CLOUD_PROVIDER
-    response['Metadata']['CloudProvider']['Auth'] = panoptes.aws.authentication.get_current_session_arn(aws_client)
+    response['Metadata']['CloudProvider']['Auth'] = panoptes.aws.authentication.get_current_session_info(aws_client)
 
     return response
 
