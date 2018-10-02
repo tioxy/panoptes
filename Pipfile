@@ -8,6 +8,7 @@ name = "pypi"
 pyyaml = "*"
 click = "*"
 colorama = "*"
+"jinja2" = "*"
 
 [dev-packages]
 pylint = "*"

@@ -24,6 +24,7 @@ setup(
         'click==7.0',
         'colorama==0.3.9',
         'PyYAML==3.13',
+        'Jinja2==2.10',
     ],
     keywords='panoptes aws security analysis cloud devops',
     license='LICENSE',

@@ -3,14 +3,30 @@
 Functions to print specific AWS analysis output.
 """
 
-import colorama
 import panoptes.generic.output
+import jinja2
+import colorama
 
 
 ALL_TRAFFIC_PROTOCOL = "-1"
-PUBLIC_CIDR = "0.0.0.0/0"
-COLOR_WARNING = colorama.Fore.LIGHTYELLOW_EX
 COLOR_ALERT = colorama.Fore.LIGHTRED_EX
+COLOR_WARNING = colorama.Fore.LIGHTYELLOW_EX
+PUBLIC_CIDR = "0.0.0.0/0"
+TEMPLATE = """{{ HEADER }}
+
+
+{{ FIRST_SECTION }}
+{% for secgroup in UNUSED_SECGROUP_MESSAGES %}{{ secgroup }}
+{% endfor %}
+{{ UNUSED_SECGROUP_NOTIFICATION }}
+
+
+{{ SECOND_SECTION }}
+{{ SECOND_SECTION_CONTENT }}
+
+{{ SECOND_SECTION_NOTIFICATIONS }}
+"""
+
 
 def print_human(analysis):
     """
@@ -40,56 +56,34 @@ def print_human(analysis):
             + colorama.Style.RESET_ALL
         )
 
-    human_output = ""
+    human_output_template = jinja2.Template(TEMPLATE)
+
     unused_groups_list = analysis['SecurityGroups']['UnusedGroups']
     unsafe_groups_list = analysis['SecurityGroups']['UnsafeGroups']
 
     colorama.init()
 
-    human_output += (
-        panoptes.generic.output.generate_header_message(
-            "PANOPTES AWS Analysis"
-        )
-        + "\n"
+    HEADER = panoptes.generic.output.generate_header_message(
+        "PANOPTES AWS Analysis"
     )
 
-    human_output += (
-        2 * "\n"
-        + panoptes.generic.output.generate_section_message(
-            "01. UNUSED SECURITY GROUPS",
-        )
-        + "\n"
+    FIRST_SECTION = panoptes.generic.output.generate_section_message(
+        "01. UNUSED SECURITY GROUPS"
     )
-
     if unused_groups_list:
-        for unused_group in unused_groups_list:
-            human_output += (
-                generate_security_group_message(unused_group)
-                + "\n"
-            )
-        human_output += (
-            "\n"
-            + panoptes.generic.output.generate_warning_message(
-                f"{len(unused_groups_list)} security groups not being used"
-            )
-            + "\n"
+        UNUSED_SECGROUP_MESSAGES = list(map(generate_security_group_message, unused_groups_list))
+        UNUSED_SECGROUP_NOTIFICATION = panoptes.generic.output.generate_warning_message(
+            f"{len(unused_groups_list)} security groups not being used"
         )
     else:
-        human_output += (
-            "\n"
-            + panoptes.generic.output.generate_info_message(
-                "All security groups are attached and being used"
-            )
-            + "\n"
+        UNUSED_SECGROUP_NOTIFICATION = panoptes.generic.output.generate_info_message(
+            "All security groups are attached and being used"
         )
 
-    human_output += (
-        2 * "\n"
-        + panoptes.generic.output.generate_section_message(
-            "02. SECURITY GROUPS WITH UNSAFE INGRESS RULES"
-        )
-        + "\n"
+    SECOND_SECTION = panoptes.generic.output.generate_section_message(
+        "02. SECURITY GROUPS WITH UNSAFE INGRESS RULES"
     )
+    """
     if unsafe_groups_list:
         alert_rule_count = 0
         warning_rule_count = 0
@@ -167,7 +161,17 @@ def print_human(analysis):
                 + "\n"
             )
         )
+    """
 
+    template_variables = {
+        "HEADER": HEADER,
+        "FIRST_SECTION": FIRST_SECTION,
+        "UNUSED_SECGROUP_MESSAGES": UNUSED_SECGROUP_MESSAGES,
+        "UNUSED_SECGROUP_NOTIFICATION": UNUSED_SECGROUP_NOTIFICATION,
+        "SECOND_SECTION": SECOND_SECTION,
+    }
+
+    human_output = human_output_template.render(**template_variables)
     return human_output
 
 
