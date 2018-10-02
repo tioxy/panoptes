@@ -55,20 +55,21 @@ def aws_analyze_command(region, profile, output, whitelist_path):
         "yml": panoptes.generic.output.print_yml,
     }
 
-    whitelist = []
     if whitelist_path:
         whitelist = panoptes.generic.parser.parse_whitelist_file(
             whitelist_path=whitelist_path
         )
+    else:
+        whitelist = []
 
-    aws_client = panoptes.aws.authentication.get_client(
+    session = panoptes.aws.authentication.create_session(
         region=region,
         profile=profile,
     )
 
-    if aws_client:
+    if session:
         analysis = panoptes.aws.analysis.analyze_security_groups(
-            aws_client=aws_client,
+            session=session,
             whitelist=whitelist,
         )
         print(aws_output_options.get(output)(analysis=analysis))

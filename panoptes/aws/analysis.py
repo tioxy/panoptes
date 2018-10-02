@@ -59,12 +59,12 @@ def generate_unsafe_ingress_entry(ingress_entry, unsafe_ip):
     return unsafe_ingress
 
 
-def analyze_security_groups(aws_client, whitelist=[]):
+def analyze_security_groups(session, whitelist=[]):
     """
     The main analysis function
 
     Parameters:
-        - aws_client:
+        - aws_session:
             Type: boto3.Session
             Description: Client object from cloud_authentication modules
 
@@ -125,9 +125,9 @@ def analyze_security_groups(aws_client, whitelist=[]):
     }
     response['Metadata']['StartedAt'] = panoptes.generic.analysis.get_current_time()
 
-    whitelist += panoptes.aws.whitelist.list_all_safe_ips(aws_client)
-    all_security_groups = aws_client.client('ec2').describe_security_groups()['SecurityGroups']
-    all_attached_groups = panoptes.aws.attached.list_all_attached_secgroups(aws_client)
+    whitelist += panoptes.aws.whitelist.list_all_safe_ips(session)
+    all_security_groups = session.client('ec2').describe_security_groups()['SecurityGroups']
+    all_attached_groups = panoptes.aws.attached.list_all_attached_secgroups(session)
 
     for security_group in all_security_groups:
         # Validating if group is unused
@@ -162,7 +162,7 @@ def analyze_security_groups(aws_client, whitelist=[]):
 
     response['Metadata']['FinishedAt'] = panoptes.generic.analysis.get_current_time()
     response['Metadata']['CloudProvider']['Name'] = CLOUD_PROVIDER
-    response['Metadata']['CloudProvider']['Auth'] = panoptes.aws.authentication.get_current_session_info(aws_client)
+    response['Metadata']['CloudProvider']['Auth'] = panoptes.aws.authentication.get_session_info(session)
 
     return response
 
