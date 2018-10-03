@@ -2,12 +2,12 @@
 Responsible for generic outputs used through Panoptes module
 """
 
+import colorama
 import json
 import yaml
-import colorama
 
 
-def print_json(analysis):
+def print_json(analysis: dict):
     """
     Converts the any analysis dictionary into prettified JSON output
     """
@@ -18,7 +18,7 @@ def print_json(analysis):
     )
 
 
-def print_yml(analysis):
+def print_yml(analysis: dict):
     """
     Converts the any analysis dictionary into YML output
     """
@@ -29,7 +29,7 @@ def print_yml(analysis):
     )
 
 
-def generate_alert_message(content):
+def generate_alert_message(content: str):
     """
     Receives the ALERT message content and colorizes it
     """
@@ -41,7 +41,7 @@ def generate_alert_message(content):
     )
 
 
-def generate_info_message(content):
+def generate_info_message(content: str):
     """
     Receives the INFO message content and colorizes it
     """
@@ -53,7 +53,7 @@ def generate_info_message(content):
     )
 
 
-def generate_warning_message(content):
+def generate_warning_message(content: str):
     """
     Receives the WARNING message content and colorizes it
     """
@@ -65,7 +65,7 @@ def generate_warning_message(content):
     )
 
 
-def generate_section_message(content):
+def generate_section_message(content: str):
     """
     Receives the SECTION message content and colorizes it
     """
@@ -78,7 +78,7 @@ def generate_section_message(content):
     )
 
 
-def generate_header_message(content, special_char="=", special_len=61):
+def generate_header_message(content: str, special_char: str="=", special_len: int=61):
     horizontal = special_len * special_char
     return(
         colorama.Style.RESET_ALL
@@ -94,9 +94,9 @@ def generate_header_message(content, special_char="=", special_len=61):
     )
 
 
-def centralize_content_from_base_string(content, base_string):
-    def get_necessary_spaces(content, base_string):
-        return (len(base_string) - len(content)) // 2 * " "
+def centralize_content_from_base_string(content: str, base_string: str):
+    def get_necessary_spaces(content: str, base_string: str):
+        return ((len(base_string) - len(content)) // 2) * " "
     return (
         get_necessary_spaces(content, base_string)
         + content

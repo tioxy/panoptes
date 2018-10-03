@@ -3,7 +3,7 @@
 Functions to print specific AWS analysis output.
 """
 
-import panoptes.generic.output
+import panoptes
 import jinja2
 import colorama
 

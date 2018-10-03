@@ -4,12 +4,12 @@ Generates the dynamic whitelist of AWS Resources, considering them not harmful
 and known resources
 """
 
-import panoptes.aws.authentication
-import concurrent.futures
 import boto3
+import concurrent.futures
+import panoptes
 
 
-def list_all_safe_ips(session):
+def list_all_safe_ips(session: boto3.session.Session) -> list:
     """
     Function responsible for aggregating all methods and removing duplicates
     """
@@ -31,7 +31,7 @@ def list_all_safe_ips(session):
     return list(set(all_safe_ips))
 
 
-def get_vpc_ranges(ec2):
+def get_vpc_ranges(ec2) -> list:
     """
     List VPCs CIDR ranges in the account
     """
@@ -42,7 +42,7 @@ def get_vpc_ranges(ec2):
     return list(set(vpc_ranges))
 
 
-def get_subnet_ranges(ec2):
+def get_subnet_ranges(ec2) -> list:
     """
     List Subnets CIDR ranges in the account
     """
@@ -53,7 +53,7 @@ def get_subnet_ranges(ec2):
     return list(set(subnet_ranges))
 
 
-def get_vpc_instance_ips(ec2):
+def get_vpc_instance_ips(ec2) -> list:
     """
     List Public and Private IPs from EC2 instances inside a VPC in the
     account
@@ -84,7 +84,7 @@ def get_vpc_instance_ips(ec2):
     return list(set(vpc_instances_ips))
 
 
-def get_elastic_ips(ec2):
+def get_elastic_ips(ec2) -> list:
     """
     List all Elastic IPs reserved in the account
     """

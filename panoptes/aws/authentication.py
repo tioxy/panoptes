@@ -4,8 +4,8 @@ Using AWS best practices forcing the user to write Named Profiles instead of
 direct IAM credentials through CLI.
 """
 
-import panoptes.generic.exceptions
 import boto3
+import panoptes
 
 
 def create_session(
@@ -21,7 +21,7 @@ def create_session(
         aws_session_token=session_token,
     )
     if not session.get_credentials():
-        raise panoptes.generic.exceptions.PanoptesAuthError(
+        raise panoptes.aws.exceptions.PanoptesAWSCreateSessionError(
             "Panoptes could not authenticate to AWS. "
             "Check if your credentials exist and work."
         )

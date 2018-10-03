@@ -4,11 +4,12 @@ Functions responsible for listing and grouping all attached security
 groups within AWS resources.
 """
 
+import boto3
 import concurrent.futures
-import panoptes.aws.authentication
+import panoptes
 
 
-def list_all_attached_secgroups(session):
+def list_all_attached_secgroups(session: boto3.session.Session) -> list:
     """
     Lists and groups all attached security groups within AWS resources
     """
@@ -35,7 +36,7 @@ def list_all_attached_secgroups(session):
     return list(set(all_attached_groups))
 
 
-def list_ec2_attached_secgroups(ec2):
+def list_ec2_attached_secgroups(ec2) -> list:
     """
     List security groups attached to EC2 instances
     """
@@ -50,7 +51,7 @@ def list_ec2_attached_secgroups(ec2):
     return list(set(ec2_attached_groups))
 
 
-def list_rds_attached_secgroups(rds):
+def list_rds_attached_secgroups(rds) -> list:
     """
     List security groups attached to RDS instances
     """
@@ -64,7 +65,7 @@ def list_rds_attached_secgroups(rds):
     return list(set(rds_attached_groups))
 
 
-def list_elb_attached_secgroups(elb):
+def list_elb_attached_secgroups(elb) -> list:
     """
     List security groups attached to Elastic Load Balancers
     """
@@ -78,7 +79,7 @@ def list_elb_attached_secgroups(elb):
     return list(set(elb_attached_groups))
 
 
-def list_elbv2_attached_secgroups(elbv2):
+def list_elbv2_attached_secgroups(elbv2) -> list:
     """
     List security groups attached to Elastic Load Balancers V2
     """
@@ -93,7 +94,7 @@ def list_elbv2_attached_secgroups(elbv2):
     return list(set(elbv2_attached_groups))
 
 
-def list_lambda_attached_secgroups(lambda_aws):
+def list_lambda_attached_secgroups(lambda_aws) -> list:
     """
     List security groups attached to Lambda functions
     """
@@ -110,7 +111,7 @@ def list_lambda_attached_secgroups(lambda_aws):
     return list(set(lambda_attached_groups))
 
 
-def list_elasticache_attached_secgroups(ecache):
+def list_elasticache_attached_secgroups(ecache) -> list:
     """
     List security groups attached to ElastiCache
     """
@@ -138,7 +139,7 @@ def list_elasticache_attached_secgroups(ecache):
     return list(set(elasticache_attached_groups))
 
 
-def list_ecs_attached_secgroups(ecs):
+def list_ecs_attached_secgroups(ecs) -> list:
     """
     List security groups attached to ECS Services
     """

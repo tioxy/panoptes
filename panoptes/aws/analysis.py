@@ -4,17 +4,14 @@ Responsible to the entire AWS analysis. Here the dynamic whitelist,
 the logic behind unknown ingress rules and unused security groups are created.
 """
 
-import panoptes.aws.authentication
-import panoptes.aws.whitelist
-import panoptes.aws.attached
-import panoptes.generic.analysis
 import boto3
+import panoptes
 
 
 CLOUD_PROVIDER = "aws"
 
 
-def generate_unused_secgroup_entry(security_group):
+def generate_unused_secgroup_entry(security_group: dict) -> dict:
     """
     Generates a dictionary from an unused security group to the analysis
     response
@@ -28,7 +25,7 @@ def generate_unused_secgroup_entry(security_group):
     return unused_group
 
 
-def generate_unsafe_secgroup_entry(security_group, unsafe_ingress_entries):
+def generate_unsafe_secgroup_entry(security_group: dict, unsafe_ingress_entries: list) -> dict:
     """
     Generates a dictionary from an unsafe security group, receiving all
     unsafe ingress entries related to this security group to the analysis
@@ -43,7 +40,7 @@ def generate_unsafe_secgroup_entry(security_group, unsafe_ingress_entries):
     return unsafe_group
 
 
-def generate_unsafe_ingress_entry(ingress_entry, unsafe_ip):
+def generate_unsafe_ingress_entry(ingress_entry: dict, unsafe_ip: str) -> dict:
     """
     Generates a dictionary from an unsafe ingress entry to the analysis
     response
@@ -59,14 +56,14 @@ def generate_unsafe_ingress_entry(ingress_entry, unsafe_ip):
     return unsafe_ingress
 
 
-def analyze_security_groups(session, whitelist=[]):
+def analyze_security_groups(session: boto3.session.Session, whitelist: list=[]) -> dict:
     """
     The main analysis function
 
     Parameters:
         - aws_session:
             Type: boto3.Session
-            Description: Client object from cloud_authentication modules
+            Description: Client object from panoptes.aws.authentication.create_session() modules
 
         - whitelist:
             Type: list
@@ -123,7 +120,7 @@ def analyze_security_groups(session, whitelist=[]):
             },
         },
     }
-    response['Metadata']['StartedAt'] = panoptes.generic.analysis.get_current_time()
+    response['Metadata']['StartedAt'] = panoptes.generic.helpers.get_current_time()
 
     whitelist += panoptes.aws.whitelist.list_all_safe_ips(session)
     all_security_groups = session.client('ec2').describe_security_groups()['SecurityGroups']
@@ -160,7 +157,7 @@ def analyze_security_groups(session, whitelist=[]):
                 )
             )
 
-    response['Metadata']['FinishedAt'] = panoptes.generic.analysis.get_current_time()
+    response['Metadata']['FinishedAt'] = panoptes.generic.helpers.get_current_time()
     response['Metadata']['CloudProvider']['Name'] = CLOUD_PROVIDER
     response['Metadata']['CloudProvider']['Auth'] = panoptes.aws.authentication.get_session_info(session)
 

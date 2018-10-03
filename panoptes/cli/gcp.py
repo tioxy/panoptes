@@ -3,8 +3,7 @@ Responsible for organizing commands from Panoptes GCP CLI
 """
 
 import click
-import panoptes.cli
-import panoptes.generic
+import panoptes
 
 
 GCP_AVAILABLE_OUTPUT_OPTIONS = [

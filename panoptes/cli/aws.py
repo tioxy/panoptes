@@ -3,9 +3,8 @@ Responsible for organizing commands from Panoptes AWS CLI
 """
 
 import click
-import panoptes.cli
-import panoptes.generic
-import panoptes.aws
+import panoptes
+
 
 AWS_AVAILABLE_OUTPUT_OPTIONS = [
     'human',
@@ -56,7 +55,7 @@ def aws_analyze_command(region, profile, output, whitelist_path):
     }
 
     if whitelist_path:
-        whitelist = panoptes.generic.parser.parse_whitelist_file(
+        whitelist = panoptes.generic.helpers.parse_whitelist_file(
             whitelist_path=whitelist_path
         )
     else:
