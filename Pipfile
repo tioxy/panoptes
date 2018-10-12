@@ -13,6 +13,7 @@ colorama = "*"
 [dev-packages]
 pylint = "*"
 pytest = "*"
+vprof = "*"
 
 [requires]
 python_version = "3.7"
