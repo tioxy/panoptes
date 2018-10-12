@@ -20,9 +20,9 @@ setup(
         ],
     },
     install_requires=[
-        'boto3==1.9.14',
+        'boto3==1.9.22',
         'click==7.0',
-        'colorama==0.3.9',
+        'colorama==0.4.0',
         'PyYAML==3.13',
         'Jinja2==2.10',
     ],
