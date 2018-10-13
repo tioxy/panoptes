@@ -86,7 +86,7 @@ def list_elbv2_attached_secgroups(elbv2) -> list:
     elbv2_attached_groups = []
     boto_load_balancers = elbv2.describe_load_balancers()
     for elbv2_obj in boto_load_balancers['LoadBalancers']:
-        if 'SecurityGroups' in elbv2_obj.keys():
+        if 'SecurityGroups' in elbv2_obj:
             for security_group in elbv2_obj['SecurityGroups']:
                 elbv2_attached_groups.append(
                     security_group
@@ -101,7 +101,7 @@ def list_lambda_attached_secgroups(lambda_aws) -> list:
     lambda_attached_groups = []
     boto_lambda = lambda_aws.list_functions()
     for lambda_obj in boto_lambda['Functions']:
-        if 'VpcConfig' in lambda_obj.keys():
+        if 'VpcConfig' in lambda_obj:
             for security_group in (
                     lambda_obj['VpcConfig']['SecurityGroupIds']
             ):
@@ -122,7 +122,7 @@ def list_elasticache_attached_secgroups(ecache) -> list:
             elasticache_attached_groups.append(
                 security_group['CacheSecurityGroupName']
             )
-        if 'SecurityGroups' in elasticache_obj.keys():
+        if 'SecurityGroups' in elasticache_obj:
             for security_group in elasticache_obj['SecurityGroups']:
                 elasticache_attached_groups.append(
                     security_group['SecurityGroupId']
@@ -168,7 +168,7 @@ def list_ecs_attached_secgroups(ecs) -> list:
                 services=cluster['Services'][i:i+ECS_SERVICE_API_LIMIT]
             )
             for ecs_obj in boto_ecs['services']:
-                if 'networkConfiguration' in ecs_obj.keys():
+                if 'networkConfiguration' in ecs_obj:
                     for security_group in (
                         ecs_obj['networkConfiguration']['awsvpcConfiguration']['securityGroups']
                     ):

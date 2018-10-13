@@ -63,21 +63,21 @@ def get_vpc_instance_ips(ec2) -> list:
     for instance_obj in boto_instances['Reservations']:
         for instance in instance_obj['Instances']:
             for instance_net in instance['NetworkInterfaces']:
-                if 'Association' in instance_net.keys():
+                if 'Association' in instance_net:
                     vpc_instances_ips.append(
                         instance_net['Association']['PublicIp'] + '/32'
                     )
-                if 'PrivateIpAddress' in instance_net.keys():
+                if 'PrivateIpAddress' in instance_net:
                     vpc_instances_ips.append(
                         instance_net['PrivateIpAddress'] + '/32'
                     )
-                if 'PrivateIpAddresses' in instance_net.keys():
+                if 'PrivateIpAddresses' in instance_net:
                     for priv_ip in instance_net['PrivateIpAddresses']:
-                        if 'Association' in priv_ip.keys():
+                        if 'Association' in priv_ip:
                             vpc_instances_ips.append(
                                 priv_ip['Association']['PublicIp'] + '/32'
                             )
-                        if 'PrivateIpAddress' in priv_ip.keys():
+                        if 'PrivateIpAddress' in priv_ip:
                             vpc_instances_ips.append(
                                 priv_ip['PrivateIpAddress'] + '/32'
                             )
@@ -91,7 +91,7 @@ def get_elastic_ips(ec2) -> list:
     boto_elastic_ips = ec2.describe_addresses()
     elastic_ips = []
     for elastic_ip in boto_elastic_ips['Addresses']:
-        if 'PrivateIpAddress' in elastic_ip.keys():
+        if 'PrivateIpAddress' in elastic_ip:
             elastic_ips.append(
                 elastic_ip['PrivateIpAddress'] + '/32'
             )

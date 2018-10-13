@@ -49,9 +49,9 @@ def generate_unsafe_ingress_entry(ingress_entry: dict, unsafe_ip: str) -> dict:
         "IpProtocol": ingress_entry["IpProtocol"],
         "CidrIp": unsafe_ip,
     }
-    if "FromPort" in ingress_entry.keys():
+    if "FromPort" in ingress_entry:
         unsafe_ingress["FromPort"] = ingress_entry["FromPort"]
-    if "ToPort" in ingress_entry.keys():
+    if "ToPort" in ingress_entry:
         unsafe_ingress["ToPort"] = ingress_entry["ToPort"]
     return unsafe_ingress
 
