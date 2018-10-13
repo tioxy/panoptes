@@ -33,7 +33,7 @@ def list_all_attached_secgroups(session: boto3.session.Session) -> list:
 
         for future in concurrent.futures.as_completed(running_workers):
             all_attached_groups += future.result()
-    return list(set(all_attached_groups))
+    return all_attached_groups
 
 
 def list_ec2_attached_secgroups(ec2) -> list:
@@ -48,7 +48,7 @@ def list_ec2_attached_secgroups(ec2) -> list:
                 ec2_attached_groups.append(
                     security_group['GroupId']
                 )
-    return list(set(ec2_attached_groups))
+    return ec2_attached_groups
 
 
 def list_rds_attached_secgroups(rds) -> list:
@@ -62,7 +62,7 @@ def list_rds_attached_secgroups(rds) -> list:
             rds_attached_groups.append(
                 security_group['VpcSecurityGroupId']
             )
-    return list(set(rds_attached_groups))
+    return rds_attached_groups
 
 
 def list_elb_attached_secgroups(elb) -> list:
@@ -76,7 +76,7 @@ def list_elb_attached_secgroups(elb) -> list:
             elb_attached_groups.append(
                 security_group
             )
-    return list(set(elb_attached_groups))
+    return elb_attached_groups
 
 
 def list_elbv2_attached_secgroups(elbv2) -> list:
@@ -91,7 +91,7 @@ def list_elbv2_attached_secgroups(elbv2) -> list:
                 elbv2_attached_groups.append(
                     security_group
                 )
-    return list(set(elbv2_attached_groups))
+    return elbv2_attached_groups
 
 
 def list_lambda_attached_secgroups(lambda_aws) -> list:
@@ -108,7 +108,7 @@ def list_lambda_attached_secgroups(lambda_aws) -> list:
                 lambda_attached_groups.append(
                     security_group
                 )
-    return list(set(lambda_attached_groups))
+    return lambda_attached_groups
 
 
 def list_elasticache_attached_secgroups(ecache) -> list:
@@ -136,7 +136,7 @@ def list_elasticache_attached_secgroups(ecache) -> list:
                 )
     except Exception as e:
         pass
-    return list(set(elasticache_attached_groups))
+    return elasticache_attached_groups
 
 
 def list_ecs_attached_secgroups(ecs) -> list:
@@ -175,4 +175,4 @@ def list_ecs_attached_secgroups(ecs) -> list:
                         ecs_attached_groups.append(
                             security_group
                         )
-    return list(set(ecs_attached_groups))
+    return ecs_attached_groups

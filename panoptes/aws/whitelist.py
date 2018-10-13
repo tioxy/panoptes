@@ -28,7 +28,7 @@ def list_all_safe_ips(session: boto3.session.Session) -> list:
 
         for future in concurrent.futures.as_completed(running_workers):
             all_safe_ips += future.result()
-    return list(set(all_safe_ips))
+    return all_safe_ips
 
 
 def get_vpc_ranges(ec2) -> list:
@@ -39,7 +39,7 @@ def get_vpc_ranges(ec2) -> list:
     vpc_ranges = [
         vpc['CidrBlock'] for vpc in boto_vpcs['Vpcs']
     ]
-    return list(set(vpc_ranges))
+    return vpc_ranges
 
 
 def get_subnet_ranges(ec2) -> list:
@@ -50,7 +50,7 @@ def get_subnet_ranges(ec2) -> list:
     subnet_ranges = [
         subnet['CidrBlock'] for subnet in boto_subnets['Subnets']
     ]
-    return list(set(subnet_ranges))
+    return subnet_ranges
 
 
 def get_vpc_instance_ips(ec2) -> list:
@@ -81,7 +81,7 @@ def get_vpc_instance_ips(ec2) -> list:
                             vpc_instances_ips.append(
                                 priv_ip['PrivateIpAddress'] + '/32'
                             )
-    return list(set(vpc_instances_ips))
+    return vpc_instances_ips
 
 
 def get_elastic_ips(ec2) -> list:
@@ -98,7 +98,7 @@ def get_elastic_ips(ec2) -> list:
         elastic_ips.append(
             elastic_ip['PublicIp'] + '/32'
         )
-    return list(set(elastic_ips))
+    return elastic_ips
 
 
 if __name__ == "__main__":
