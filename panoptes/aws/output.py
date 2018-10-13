@@ -16,16 +16,17 @@ TEMPLATE = """{{ HEADER }}
 
 
 {{ FIRST_SECTION }}
-{% for secgroup in UNUSED_SECGROUP_MESSAGES %}{{ secgroup }}
+{% for secgroup in UNUSED_SECGROUPS %}{{ secgroup }}
 {% endfor %}
-{{ UNUSED_SECGROUP_NOTIFICATION }}
+{% for notification in UNUSED_SECGROUP_NOTIFICATIONS %}{{ notification }}{% endfor %}
 
 
 {{ SECOND_SECTION }}
-{{ SECOND_SECTION_CONTENT }}
-
-{{ SECOND_SECTION_NOTIFICATIONS }}
-"""
+{% for secgroup,rules in UNSAFE_SECGROUPS %}{{ secgroup }}
+{{ rules }}
+{% endfor %}
+{% for notification in UNSAFE_RULES_NOTIFICATIONS %}{{ notification }}
+{% endfor %}"""
 
 
 def print_human(analysis):
@@ -38,11 +39,7 @@ def print_human(analysis):
             + colorama.Style.BRIGHT
             + color
             + "    "
-            + protocol
-            + "   "
-            + range
-            + "   "
-            + cidr_ip
+            + protocol + "   " + range + "   " + cidr_ip
             + colorama.Style.RESET_ALL
         )
 
@@ -57,50 +54,50 @@ def print_human(analysis):
         )
 
     human_output_template = jinja2.Template(TEMPLATE)
-
     unused_groups_list = analysis['SecurityGroups']['UnusedGroups']
     unsafe_groups_list = analysis['SecurityGroups']['UnsafeGroups']
 
     colorama.init()
-
     HEADER = panoptes.generic.output.generate_header_message(
-        "PANOPTES AWS Analysis"
+        "PANOPTES Analysis"
     )
 
     FIRST_SECTION = panoptes.generic.output.generate_section_message(
         "01. UNUSED SECURITY GROUPS"
     )
+    UNUSED_SECGROUP_NOTIFICATIONS = []
     if unused_groups_list:
-        UNUSED_SECGROUP_MESSAGES = list(map(generate_security_group_message, unused_groups_list))
-        UNUSED_SECGROUP_NOTIFICATION = panoptes.generic.output.generate_warning_message(
-            f"{len(unused_groups_list)} security groups not being used"
+        UNUSED_SECGROUPS = list(map(generate_security_group_message, unused_groups_list))
+        UNUSED_SECGROUP_NOTIFICATIONS.append(
+            panoptes.generic.output.generate_warning_message(
+                f"{len(unused_groups_list)} security groups not being used"
+            )
         )
     else:
-        UNUSED_SECGROUP_NOTIFICATION = panoptes.generic.output.generate_info_message(
-            "All security groups are attached and being used"
+        UNUSED_SECGROUP_NOTIFICATIONS.append(
+            panoptes.generic.output.generate_info_message(
+                "All security groups are attached and being used"
+            )
         )
 
     SECOND_SECTION = panoptes.generic.output.generate_section_message(
         "02. SECURITY GROUPS WITH UNSAFE INGRESS RULES"
     )
-    """
+    UNSAFE_RULES_NOTIFICATIONS = []
     if unsafe_groups_list:
-        alert_rule_count = 0
-        warning_rule_count = 0
-
+        alert_rules = 0
+        warning_rules = 0
+        UNSAFE_SECGROUPS = []
         for unsafe_group in unsafe_groups_list:
-            human_output += (
-                generate_security_group_message(unsafe_group)
-                + "\n"
-            )
+            secgroup = generate_security_group_message(unsafe_group)
+            rules = ""
+
             for ingress in unsafe_group['UnsafePorts']:
-                cidr_ip = ingress['CidrIp']
-                protocol = ingress['IpProtocol']
-                range = 'All'
-                color = colorama.Fore.LIGHTYELLOW_EX
+                color = COLOR_WARNING
+                protocol = ingress['IpProtocol'].upper()
 
                 # Making range values prettier
-                if 'FromPort' in ingress.keys() or 'ToPort' in ingress.keys():
+                if any(k in ingress for k in ['FromPort', 'ToPort']):
                     if ingress['FromPort'] == ingress["ToPort"]:
                         range = (
                             f"{ingress['FromPort']}"
@@ -109,66 +106,59 @@ def print_human(analysis):
                         range = (
                             f"{ingress['FromPort']} - {ingress['ToPort']}"
                         )
+                else:
+                    range = "All"
 
-                # ALERT if All Traffic protocol is enabled
-                if 'IpProtocol' in ingress.keys():
-                    if ingress['IpProtocol'] == ALL_TRAFFIC_PROTOCOL:
-                        color = COLOR_ALERT
-                        protocol = 'All'
-                    # Making protocol names prettier
-                    elif ingress['IpProtocol'] in ['tcp', 'udp', 'icmp']:
-                        protocol = ingress['IpProtocol'].upper()
+                # ALERT if All Traffic protocol is enabled                
+                if ingress['IpProtocol'] == ALL_TRAFFIC_PROTOCOL:
+                    protocol = 'All'
+                    color = COLOR_ALERT
 
                 # ALERT if IP is public
                 if ingress['CidrIp'] == PUBLIC_CIDR:
                     color = COLOR_ALERT
 
-                if color is COLOR_WARNING:
-                    warning_rule_count += 1
-                elif color is COLOR_ALERT:
-                    alert_rule_count += 1
-
-                human_output += (
+                rules += (
                     generate_ingress_message(
                         protocol=protocol,
-                        cidr_ip=cidr_ip,
+                        cidr_ip=ingress['CidrIp'],
                         range=range,
                         color=color,
-                    )
-                    + "\n"
+                    )+'\n'
                 )
-            human_output += "\n"
-
-        if warning_rule_count:
-            human_output += (
+                if color is COLOR_WARNING:
+                    warning_rules += 1
+                elif color is COLOR_ALERT:
+                    alert_rules += 1
+            UNSAFE_SECGROUPS.append((secgroup, rules))
+    
+        if warning_rules:
+            UNSAFE_RULES_NOTIFICATIONS.append(
                 panoptes.generic.output.generate_warning_message(
-                    f"{warning_rule_count} rules found with unknown IPs"
-                    + "\n"
+                    f"{warning_rules} rules found with unknown IPs"
                 )
             )
-
-        if alert_rule_count:
-            human_output += (
+        if alert_rules:
+            UNSAFE_RULES_NOTIFICATIONS.append(
                 panoptes.generic.output.generate_alert_message(
-                    f"{alert_rule_count} rules public/all traffic enabled"
-                    + "\n"
+                    f"{alert_rules} rules public/all traffic enabled"
                 )
             )
     else:
-        human_output += (
+        UNSAFE_RULES_NOTIFICATIONS.append(
             panoptes.generic.output.generate_info_message(
                 "All security groups have safe rules"
-                + "\n"
             )
         )
-    """
 
     template_variables = {
         "HEADER": HEADER,
         "FIRST_SECTION": FIRST_SECTION,
-        "UNUSED_SECGROUP_MESSAGES": UNUSED_SECGROUP_MESSAGES,
-        "UNUSED_SECGROUP_NOTIFICATION": UNUSED_SECGROUP_NOTIFICATION,
+        "UNUSED_SECGROUPS": UNUSED_SECGROUPS,
+        "UNUSED_SECGROUP_NOTIFICATIONS": UNUSED_SECGROUP_NOTIFICATIONS,
         "SECOND_SECTION": SECOND_SECTION,
+        "UNSAFE_SECGROUPS": UNSAFE_SECGROUPS,
+        "UNSAFE_RULES_NOTIFICATIONS": UNSAFE_RULES_NOTIFICATIONS,
     }
 
     human_output = human_output_template.render(**template_variables)
