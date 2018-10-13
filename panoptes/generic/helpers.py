@@ -3,14 +3,28 @@
 Just a collection of generic functions to help cloud provider analysis
 """
 
-from datetime import datetime
-
+import datetime
+import dateutil
 
 def get_current_time() -> str:
     """
     Returns a datetime object with ISO 8601 format
     """
-    return datetime.now().isoformat()
+    return datetime.datetime.now().isoformat()
+
+
+def generate_human_time(time: datetime.datetime) -> str:
+    """
+    Generates a human-readable string from a datetime object
+    """
+    return time.strftime("%b %d %Y, %H:%M:%S")
+
+
+def convert_string_datetime(timestr: str) -> datetime.datetime:
+    """
+    Converts any string into a datetime object
+    """
+    return dateutil.parser.parse(timestr)
 
 
 def parse_whitelist_file(whitelist_path: str) -> list:

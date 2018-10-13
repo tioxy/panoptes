@@ -56,7 +56,7 @@ def generate_unsafe_ingress_entry(ingress_entry: dict, unsafe_ip: str) -> dict:
     return unsafe_ingress
 
 
-def analyze_security_groups(session: boto3.session.Session, whitelist: list=[]) -> dict:
+def analyze_security_groups(session: boto3.session.Session, whitelist: list = []) -> dict:
     """
     The main analysis function
 
@@ -159,8 +159,9 @@ def analyze_security_groups(session: boto3.session.Session, whitelist: list=[]) 
 
     response['Metadata']['FinishedAt'] = panoptes.generic.helpers.get_current_time()
     response['Metadata']['CloudProvider']['Name'] = CLOUD_PROVIDER
-    response['Metadata']['CloudProvider']['Auth'] = panoptes.aws.authentication.get_session_info(session)
-
+    response['Metadata']['CloudProvider']['Auth'] = (
+        panoptes.aws.authentication.get_session_info(session)
+    )
     return response
 
 

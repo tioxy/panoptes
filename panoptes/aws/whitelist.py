@@ -4,8 +4,8 @@ Generates the dynamic whitelist of AWS Resources, considering them not harmful
 and known resources
 """
 
-import boto3
 import concurrent.futures
+import boto3
 import panoptes
 
 

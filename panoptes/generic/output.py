@@ -2,8 +2,8 @@
 Responsible for generic outputs used through Panoptes module
 """
 
-import colorama
 import json
+import colorama
 import yaml
 
 
@@ -78,7 +78,7 @@ def generate_section_message(content: str):
     )
 
 
-def generate_header_message(content: str, special_char: str="=", special_len: int=61):
+def generate_header_message(content: str, special_char: str = "=", special_len: int = 61):
     horizontal = special_len * special_char
     return(
         colorama.Style.RESET_ALL

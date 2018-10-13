@@ -4,8 +4,8 @@ Functions responsible for listing and grouping all attached security
 groups within AWS resources.
 """
 
-import boto3
 import concurrent.futures
+import boto3
 import panoptes
 
 
