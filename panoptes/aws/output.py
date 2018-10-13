@@ -3,9 +3,9 @@
 Functions to print specific AWS analysis output.
 """
 
-import panoptes
-import jinja2
 import colorama
+import jinja2
+import panoptes
 
 
 ALL_TRAFFIC_PROTOCOL = "-1"
@@ -15,10 +15,20 @@ PUBLIC_CIDR = "0.0.0.0/0"
 TEMPLATE = """{{ HEADER }}
 
 
+
+Cloud provider  ->  {{ CLOUD_PROVIDER_NAME }}
+Authentication  ->  {{ CLOUD_PROVIDER_AUTH }}
+Started at      ->  {{ ANALYSIS_START_TIME }}
+Finished at     ->  {{ ANALYSIS_END_TIME }}
+
+
+
 {{ FIRST_SECTION }}
 {% for secgroup in UNUSED_SECGROUPS %}{{ secgroup }}
 {% endfor %}
-{% for notification in UNUSED_SECGROUP_NOTIFICATIONS %}{{ notification }}{% endfor %}
+
+{% for notification in UNUSED_SECGROUP_NOTIFICATIONS %}{{ notification }}
+{% endfor %}
 
 
 {{ SECOND_SECTION }}
@@ -151,6 +161,13 @@ def print_human(analysis):
             )
         )
 
+    start_time = panoptes.generic.helpers.generate_human_time(
+        panoptes.generic.helpers.convert_string_datetime(analysis["Metadata"]["StartedAt"])
+    )
+    end_time = panoptes.generic.helpers.generate_human_time(
+        panoptes.generic.helpers.convert_string_datetime(analysis["Metadata"]["FinishedAt"])
+    )
+
     template_variables = {
         "HEADER": HEADER,
         "FIRST_SECTION": FIRST_SECTION,
@@ -159,6 +176,10 @@ def print_human(analysis):
         "SECOND_SECTION": SECOND_SECTION,
         "UNSAFE_SECGROUPS": UNSAFE_SECGROUPS,
         "UNSAFE_RULES_NOTIFICATIONS": UNSAFE_RULES_NOTIFICATIONS,
+        "CLOUD_PROVIDER_NAME": analysis["Metadata"]["CloudProvider"]["Name"].upper(),
+        "CLOUD_PROVIDER_AUTH": analysis["Metadata"]["CloudProvider"]["Auth"],
+        "ANALYSIS_START_TIME": start_time,
+        "ANALYSIS_END_TIME": end_time,
     }
 
     human_output = human_output_template.render(**template_variables)
