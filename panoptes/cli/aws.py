@@ -18,20 +18,20 @@ AWS_AVAILABLE_OUTPUT_OPTIONS = [
     help="Generate the analysis output"
 )
 @click.option(
-    '--region',
+    '-r', '--region',
     'region',
     required=True,
     help='AWS Region to list the security groups',
     metavar='<region_id>',
 )
 @click.option(
-    '--profile',
+    '-p', '--profile',
     'profile',
     help='AWS CLI configured profile which will be used',
     metavar='<profile_name>',
 )
 @click.option(
-    '--output',
+    '-o', '--output',
     'output',
     default='human',
     help='Which kind of output you want the analysis',
