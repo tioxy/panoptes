@@ -58,19 +58,23 @@ def generate_unsafe_ingress_entry(ingress_entry: dict, unsafe_ip: str) -> dict:
 
 
 def analyze_unsafe_ingress(unsafe_ingress: dict) -> dict:
+    """
+    Receives an unsafe ingress and changes "Status" following some rules
+    """
     def is_all_traffic(protocol: str) -> bool:
         ALL_TRAFFIC_PROTOCOL = "-1"
         return protocol == ALL_TRAFFIC_PROTOCOL
     def is_anywhere(cidr: str) -> bool:
         ANYWHERE_CIDR = "0.0.0.0/0"
         return cidr == ANYWHERE_CIDR
-    
+
     if is_all_traffic(unsafe_ingress["IpProtocol"]):
         unsafe_ingress["Status"] = "alert"
     if is_anywhere(unsafe_ingress["CidrIp"]):
         unsafe_ingress["Status"] = "alert"
 
     return unsafe_ingress
+
 
 def analyze_security_groups(session: boto3.session.Session, whitelist: list = []) -> dict:
     """
@@ -115,6 +119,7 @@ def analyze_security_groups(session: boto3.session.Session, whitelist: list = []
                                 "ToPort": int,
                                 "IpProtocol": str,
                                 "CidrIp": str,
+                                "Status": str,
                             },
                         ]
                     },
