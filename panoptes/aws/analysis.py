@@ -48,6 +48,7 @@ def generate_unsafe_ingress_entry(ingress_entry: dict, unsafe_ip: str) -> dict:
     unsafe_ingress = {
         "IpProtocol": ingress_entry["IpProtocol"],
         "CidrIp": unsafe_ip,
+        "Status": "warning",
     }
     if "FromPort" in ingress_entry:
         unsafe_ingress["FromPort"] = ingress_entry["FromPort"]
@@ -55,6 +56,21 @@ def generate_unsafe_ingress_entry(ingress_entry: dict, unsafe_ip: str) -> dict:
         unsafe_ingress["ToPort"] = ingress_entry["ToPort"]
     return unsafe_ingress
 
+
+def analyze_unsafe_ingress(unsafe_ingress: dict) -> dict:
+    def is_all_traffic(protocol: str) -> bool:
+        ALL_TRAFFIC_PROTOCOL = "-1"
+        return protocol == ALL_TRAFFIC_PROTOCOL
+    def is_anywhere(cidr: str) -> bool:
+        ANYWHERE_CIDR = "0.0.0.0/0"
+        return cidr == ANYWHERE_CIDR
+    
+    if is_all_traffic(unsafe_ingress["IpProtocol"]):
+        unsafe_ingress["Status"] = "alert"
+    if is_anywhere(unsafe_ingress["CidrIp"]):
+        unsafe_ingress["Status"] = "alert"
+
+    return unsafe_ingress
 
 def analyze_security_groups(session: boto3.session.Session, whitelist: list = []) -> dict:
     """
@@ -143,12 +159,13 @@ def analyze_security_groups(session: boto3.session.Session, whitelist: list = []
         for ingress_entry in security_group['IpPermissions']:
             for allowed_ip in ingress_entry['IpRanges']:
                 if allowed_ip['CidrIp'] not in whitelist:
-                    unsafe_ingress_entries.append(
-                        generate_unsafe_ingress_entry(
-                            ingress_entry=ingress_entry,
-                            unsafe_ip=allowed_ip['CidrIp'],
-                        )
+                    unsafe_ingress = generate_unsafe_ingress_entry(
+                        ingress_entry=ingress_entry,
+                        unsafe_ip=allowed_ip['CidrIp'],
                     )
+                    unsafe_ingress = analyze_unsafe_ingress(unsafe_ingress)
+                    unsafe_ingress_entries.append(unsafe_ingress)
+
         if unsafe_ingress_entries:
             response['SecurityGroups']['UnsafeGroups'].append(
                 generate_unsafe_secgroup_entry(
