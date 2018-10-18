@@ -11,7 +11,6 @@ import panoptes
 ALL_TRAFFIC_PROTOCOL = "-1"
 COLOR_ALERT = colorama.Fore.LIGHTRED_EX
 COLOR_WARNING = colorama.Fore.LIGHTYELLOW_EX
-PUBLIC_CIDR = "0.0.0.0/0"
 TEMPLATE = """{{ HEADER }}
 
 
@@ -80,7 +79,7 @@ def print_human(analysis):
         UNUSED_SECGROUPS = list(map(generate_security_group_message, unused_groups_list))
         UNUSED_SECGROUP_NOTIFICATIONS.append(
             panoptes.generic.output.generate_warning_message(
-                f"{len(unused_groups_list)} security groups not being used"
+                f"{len(unused_groups_list)} security groups found not being used"
             )
         )
     else:
@@ -103,10 +102,12 @@ def print_human(analysis):
             rules = ""
 
             for ingress in unsafe_group['UnsafePorts']:
-                color = COLOR_WARNING
+                # Prettifying "protocol"
                 protocol = ingress['IpProtocol'].upper()
+                if protocol == ALL_TRAFFIC_PROTOCOL:
+                    protocol = "All"
 
-                # Making range values prettier
+                # Prettifying "range"
                 if any(k in ingress for k in ['FromPort', 'ToPort']):
                     if ingress['FromPort'] == ingress["ToPort"]:
                         range = (
@@ -114,19 +115,17 @@ def print_human(analysis):
                         )
                     else:
                         range = (
-                            f"{ingress['FromPort']} - {ingress['ToPort']}"
+                            f"{ingress['FromPort']}-{ingress['ToPort']}"
                         )
                 else:
                     range = "All"
 
-                # ALERT if All Traffic protocol is enabled                
-                if ingress['IpProtocol'] == ALL_TRAFFIC_PROTOCOL:
-                    protocol = 'All'
+                if ingress['Status'] == "warning":
+                    color = COLOR_WARNING
+                    warning_rules += 1
+                elif ingress['Status'] == "alert":
                     color = COLOR_ALERT
-
-                # ALERT if IP is public
-                if ingress['CidrIp'] == PUBLIC_CIDR:
-                    color = COLOR_ALERT
+                    alert_rules += 1
 
                 rules += (
                     generate_ingress_message(
@@ -136,10 +135,6 @@ def print_human(analysis):
                         color=color,
                     )+'\n'
                 )
-                if color is COLOR_WARNING:
-                    warning_rules += 1
-                elif color is COLOR_ALERT:
-                    alert_rules += 1
             UNSAFE_SECGROUPS.append((secgroup, rules))
     
         if warning_rules:
@@ -151,7 +146,7 @@ def print_human(analysis):
         if alert_rules:
             UNSAFE_RULES_NOTIFICATIONS.append(
                 panoptes.generic.output.generate_alert_message(
-                    f"{alert_rules} rules public/all traffic enabled"
+                    f"{alert_rules} rules found with public IPs or all traffic enabled"
                 )
             )
     else:
