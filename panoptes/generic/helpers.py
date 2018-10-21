@@ -5,6 +5,8 @@ Just a collection of generic functions to help cloud provider analysis
 
 import datetime
 import dateutil
+import json
+import yaml
 
 def get_current_time() -> str:
     """
@@ -34,3 +36,15 @@ def parse_whitelist_file(whitelist_path: str) -> list:
     with open(whitelist_path, 'r') as whitelist_file:
         whitelist = whitelist_file.read().splitlines()
     return whitelist
+
+
+def parse_analysis_file(analysis_path: str) -> dict:
+    """
+    Receives an analysis_path containing a Panoptes generated analysis
+    """
+    with open(analysis_path, 'r') as analysis_file:
+        if ".json" in analysis_path:
+            analysis = json.load(analysis_file)
+        if ".yml" in analysis_path or ".yaml" in analysis_path:
+            analysis = yaml.load(analysis_file)
+    return analysis

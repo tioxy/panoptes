@@ -33,6 +33,14 @@ def gcp_group():
     pass
 
 
+@main.group(
+    'analysis',
+    help='Manipulate Panoptes analyses'
+)
+def analysis_group():
+    pass
+
+
 @main.command(
     'version',
     help='Show Panoptes version'
@@ -46,6 +54,7 @@ Adding commands to Click Groups
 """
 aws_group.add_command(panoptes.cli.aws.aws_analyze_command)
 gcp_group.add_command(panoptes.cli.gcp.gcp_analyze_command)
+analysis_group.add_command(panoptes.cli.analysis.analysis_view_command)
 
 
 if __name__ == "__main__":
