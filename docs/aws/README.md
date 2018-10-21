@@ -109,18 +109,20 @@ panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output jso
                 "GroupName": "all-traffic",
                 "UnsafePorts": [
                     {
+                        "Status": "alert",
                         "CidrIp": "0.0.0.0/0",
                         "IpProtocol": "-1"
                     }
                 ]
             },
             {
-                "Description": "Pot 80 open to anywhere",
+                "Description": "Pot 80 open to my house",
                 "GroupId": "sg-7a211531",
                 "GroupName": "http-public",
                 "UnsafePorts": [
                     {
-                        "CidrIp": "0.0.0.0/0",
+                        "Status": "warning",
+                        "CidrIp": "123.123.123.123/32",
                         "IpProtocol": "tcp",
                         "FromPort": 80,
                         "ToPort": 80
