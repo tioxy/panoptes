@@ -39,3 +39,8 @@ describe_services
 list_clusters
 list_services
 ```
+
+*STS*
+```
+get_caller_identity
+```

@@ -4,13 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-requests = "*"
 "boto3" = "*"
 pyyaml = "*"
 click = "*"
 colorama = "*"
+"jinja2" = "*"
 
 [dev-packages]
+pylint = "*"
+pytest = "*"
+vprof = "*"
 
 [requires]
 python_version = "3.7"

@@ -3,11 +3,10 @@ Responsible for organizing commands from Panoptes AWS CLI
 """
 
 import click
-import panoptes.cli
-import panoptes.generic
-import panoptes.aws
+import panoptes
 
-AVAILABLE_OUTPUT_OPTIONS = [
+
+AWS_AVAILABLE_OUTPUT_OPTIONS = [
     'human',
     'json',
     'yml',
@@ -19,24 +18,24 @@ AVAILABLE_OUTPUT_OPTIONS = [
     help="Generate the analysis output"
 )
 @click.option(
-    '--region',
+    '-r', '--region',
     'region',
     required=True,
     help='AWS Region to list the security groups',
     metavar='<region_id>',
 )
 @click.option(
-    '--profile',
+    '-p', '--profile',
     'profile',
     help='AWS CLI configured profile which will be used',
     metavar='<profile_name>',
 )
 @click.option(
-    '--output',
+    '-o', '--output',
     'output',
     default='human',
     help='Which kind of output you want the analysis',
-    type=click.Choice(AVAILABLE_OUTPUT_OPTIONS),
+    type=click.Choice(AWS_AVAILABLE_OUTPUT_OPTIONS),
 )
 @click.option(
     '--whitelist',
@@ -45,30 +44,34 @@ AVAILABLE_OUTPUT_OPTIONS = [
     metavar='<path>',
 )
 def aws_analyze_command(region, profile, output, whitelist_path):
+    """
+    This function is called when the user types
+    "panoptes aws analyze"
+    """
     aws_output_options = {
         "human": panoptes.aws.output.print_human,
         "json": panoptes.generic.output.print_json,
         "yml": panoptes.generic.output.print_yml,
     }
 
-    whitelist = []
     if whitelist_path:
-        whitelist = panoptes.generic.parser.parse_whitelist_file(
+        whitelist = panoptes.generic.helpers.parse_whitelist_file(
             whitelist_path=whitelist_path
         )
+    else:
+        whitelist = []
 
-    aws_client = panoptes.aws.authentication.get_client(
+    session = panoptes.aws.authentication.create_session(
         region=region,
         profile=profile,
     )
 
-    if aws_client:
+    if session:
         analysis = panoptes.aws.analysis.analyze_security_groups(
-            aws_client=aws_client,
+            session=session,
             whitelist=whitelist,
         )
-        aws_output_options.get(output)(analysis=analysis)
-    return None
+        print(aws_output_options.get(output)(analysis=analysis))
 
 
 if __name__ == "__main__":

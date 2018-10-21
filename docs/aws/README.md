@@ -6,6 +6,7 @@
     - [Limitations](README.md#limitations)
 - [Commands](README.md#commands)
     - [panoptesctl aws analyze](README.md#panoptesctl-aws-analyze)
+    - [panoptesctl version](README.md#panoptesctl-version)
 - [Integration for Developers](README.md#integration-for-developers)
 
 
@@ -31,7 +32,7 @@ Generate an analysis with YML output and a Named Profile from AWS CLI:
 ```bash
 panoptesctl aws analyze --region <YOUR_REGION_CODE> --profile <YOUR_PROFILE> --output yml
 ```
-*Check out [AWS Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html) to see available region codes*
+*Check out [AWS Regions](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html#concepts-available-regions) to see available region codes*
 
 <br>
 
@@ -58,8 +59,9 @@ Make sure that those instances have an *Elastic IP* attached and their Security 
 
 ## [Commands](#commands)
 
-### [panoptesctl aws analyze](#panoptesctl-aws-analyze)
+## [panoptesctl aws analyze](#panoptesctl-aws-analyze)
 Generate the analysis output
+
 ##### Options
 - **```--region```** : (Required) AWS Region to list the security groups
 
@@ -85,7 +87,79 @@ You need specific IAM permissions to analyze without headaches. There are some w
 
 #### Usage
 ```sh
-panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output yml --whitelist /path/to/my/whitelist.txt
+panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output json --whitelist /path/to/my/whitelist.txt
+```
+
+#### Output
+```json
+{
+    "Metadata": {
+        "CloudProvider": {
+            "Auth": "arn:aws:iam::accountid:user/youruser",
+            "Name": "aws"
+        },
+        "FinishedAt": "2018-01-01T12:40:20.000000",
+        "StartedAt": "2018-01-01T12:40:30.000000"
+    },
+    "SecurityGroups": {
+        "UnsafeGroups": [
+            {
+                "Description": "All Traffic",
+                "GroupId": "sg-060c270f54658459f",
+                "GroupName": "all-traffic",
+                "UnsafePorts": [
+                    {
+                        "Status": "alert",
+                        "CidrIp": "0.0.0.0/0",
+                        "IpProtocol": "-1"
+                    }
+                ]
+            },
+            {
+                "Description": "Pot 80 open to my house",
+                "GroupId": "sg-7a211531",
+                "GroupName": "http-public",
+                "UnsafePorts": [
+                    {
+                        "Status": "warning",
+                        "CidrIp": "123.123.123.123/32",
+                        "IpProtocol": "tcp",
+                        "FromPort": 80,
+                        "ToPort": 80
+                    }
+                ]
+            }
+        ],
+        "UnusedGroups": [
+            {
+                "Description": "Kubernetes - Master Nodes",
+                "GroupId": "sg-09e97bab78ee5f82a",
+                "GroupName": "k8s-master-nodes",
+                "VpcId": "vpc-1a2b3c4d"
+            },
+            {
+                "Description": "Kubernetes - Worker nodes",
+                "GroupId": "sg-0fb0837417362d743",
+                "GroupName": "k8s-worker-nodes",
+                "VpcId": "vpc-1a2b3c4d"
+            }
+        ]
+    }
+}
+```
+
+## [panoptesctl version](#panoptesctl-version)
+Show Panoptes version
+
+
+#### Usage
+```sh
+panoptesctl version
+```
+
+#### Output
+```sh
+0.4.0
 ```
 
 <br>
@@ -108,7 +182,7 @@ def main():
         - AWS Roles
         - AWS Access/Secret environment variables
     """
-    aws_client = panoptes.aws.authentication.get_client(
+    aws_session = panoptes.aws.authentication.create_session(
         region=MY_REGION,
         # profile=MY_PROFILE,
         # session_token=MY_SESSION_TOKEN,
@@ -119,15 +193,17 @@ def main():
         1- Read the whitelist from a file
         2- Declare the whitelist manually through a list
     """
-    #
-    # First Way
-    #
-    #YOUR_WHITELIST = panoptes.generic.parser.parse_whitelist_file(
+
+
+    """
+    1st Way
+    """
+    #YOUR_WHITELIST = panoptes.generic.helpers.parse_whitelist_file(
     #    whitelist_path=PATH_TO_WHITELIST
     #)
-    #
-    # Second Way
-    #
+    """
+    2nd Way
+    """
     #YOUR_WHITELIST = [
     #    '123.123.123.123/32',
     #    '10.0.0.0/24',
@@ -138,7 +214,7 @@ def main():
     Generate the analysis
     """
     generated_analysis = panoptes.aws.analysis.analyze_security_groups(
-        aws_client=aws_client,
+        session=aws_session,
         # whitelist=YOUR_WHITELIST,
     )
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import click
+import pkg_resources
 import panoptes.cli.aws
 import panoptes.cli.gcp
 
@@ -30,6 +31,14 @@ def aws_group():
 )
 def gcp_group():
     pass
+
+
+@main.command(
+    'version',
+    help='Show Panoptes version'
+)
+def version_command():
+    print(pkg_resources.get_distribution("panoptes").version)
 
 
 """
