@@ -8,6 +8,14 @@ Panoptes is an automatic security group analyzer focused on reducing the amount 
 
 ## [Prerequisites](#prerequisites)
 -----
+
+#### For lazy users
+There is a Docker image [*tioxy/panoptes*](https://hub.docker.com/r/tioxy/panoptes/) which uses the Dockerfile located in the root of the repository
+
+#### Python 
+- Python >= 3.6
+- pip
+
 #### For AWS usage
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/installing.html) installed and configured with your IAM credentials (if you want more customization use [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html))
 
