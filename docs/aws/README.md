@@ -115,52 +115,20 @@ panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output jso
                 ]
             },
             {
-                "Description": "My random secgroup",
-                "GroupId": "sg-1420265d",
-                "GroupName": "my-random-secgroup",
-                "UnsafePorts": [
-                    {
-                        "CidrIp": "123.123.123.123/32",
-                        "IpProtocol": "-1"
-                    }
-                ]
-            },
-            {
-                "Description": "Current running applications",
-                "GroupId": "sg-3509047e",
-                "GroupName": "running-apps",
-                "UnsafePorts": [
-                    {
-                        "CidrIp": "123.123.123.123/22",
-                        "IpProtocol": "-1"
-                    },
-                    {
-                        "CidrIp": "210.210.0.0/16",
-                        "IpProtocol": "-1"
-                    }
-                ]
-            },
-            {
                 "Description": "Pot 80 open to anywhere",
                 "GroupId": "sg-7a211531",
                 "GroupName": "http-public",
                 "UnsafePorts": [
                     {
                         "CidrIp": "0.0.0.0/0",
-                        "FromPort": 80,
                         "IpProtocol": "tcp",
+                        "FromPort": 80,
                         "ToPort": 80
                     }
                 ]
             }
         ],
         "UnusedGroups": [
-            {
-                "Description": "All Traffic",
-                "GroupId": "sg-060c270f54658459f",
-                "GroupName": "all-traffic",
-                "VpcId": "vpc-1a2b3c4d"
-            },
             {
                 "Description": "Kubernetes - Master Nodes",
                 "GroupId": "sg-09e97bab78ee5f82a",
