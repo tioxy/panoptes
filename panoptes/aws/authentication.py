@@ -10,8 +10,8 @@ import panoptes
 
 def create_session(
         region: str,
-        profile: str=None,
-        session_token: str=None) -> boto3.session.Session:
+        profile: str = None,
+        session_token: str = None) -> boto3.session.Session:
     """
     Generates a Boto3 session from named profile and region inputs
     """
