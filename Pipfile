@@ -14,6 +14,7 @@ colorama = "*"
 pylint = "*"
 pytest = "*"
 vprof = "*"
+moto = "*"
 
 [requires]
 python_version = "3.7"
