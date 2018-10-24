@@ -4,7 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-"boto3" = "*"
+boto = "==2.49.0"
+"boto3" = "==1.7.84"
+botocore = "==1.10.84"
 pyyaml = "*"
 click = "*"
 colorama = "*"
@@ -15,6 +17,7 @@ pylint = "*"
 pytest = "*"
 vprof = "*"
 moto = "*"
+freezegun = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
