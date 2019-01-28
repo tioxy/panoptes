@@ -5,4 +5,8 @@ WORKDIR /app/
 COPY . /app/
 
 # Install Panoptes Module locally
-RUN python setup.py install
+RUN apk add --no-cache git \
+ && pip install --upgrade poetry \
+ && poetry install
+
+ENTRYPOINT ["poetry", "run"]
