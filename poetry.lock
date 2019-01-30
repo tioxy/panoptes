@@ -8,6 +8,22 @@ version = "0.24.0"
 
 [[package]]
 category = "dev"
+description = "Atomic file writes."
+name = "atomicwrites"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.2.1"
+
+[[package]]
+category = "dev"
+description = "Classes Without Boilerplate"
+name = "attrs"
+optional = false
+python-versions = "*"
+version = "18.2.0"
+
+[[package]]
+category = "dev"
 description = "The AWS X-Ray SDK for Python (the SDK) enables Python developers to record and emit information from within their applications to the AWS X-Ray service."
 name = "aws-xray-sdk"
 optional = false
@@ -234,6 +250,17 @@ six = ">=1.9"
 
 [[package]]
 category = "dev"
+description = "More routines for operating on iterables, beyond itertools"
+name = "more-itertools"
+optional = false
+python-versions = "*"
+version = "5.0.0"
+
+[package.dependencies]
+six = ">=1.0.0,<2.0.0"
+
+[[package]]
+category = "dev"
 description = "A library that allows your python tests to easily mock out the boto library"
 name = "moto"
 optional = false
@@ -267,6 +294,22 @@ name = "pbr"
 optional = false
 python-versions = "*"
 version = "5.1.2"
+
+[[package]]
+category = "dev"
+description = "plugin and hook calling mechanisms for python"
+name = "pluggy"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.8.1"
+
+[[package]]
+category = "dev"
+description = "library with cross-python path, ini-parsing, io, code, log facilities"
+name = "py"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.7.0"
 
 [[package]]
 category = "dev"
@@ -306,6 +349,24 @@ version = "223"
 
 [package.dependencies]
 pywin32 = ">=223"
+
+[[package]]
+category = "dev"
+description = "pytest: simple powerful testing with Python"
+name = "pytest"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "4.1.1"
+
+[package.dependencies]
+atomicwrites = ">=1.0"
+attrs = ">=17.4.0"
+colorama = "*"
+more-itertools = ">=4.0.0"
+pluggy = ">=0.7"
+py = ">=1.5.0"
+setuptools = "*"
+six = ">=1.10.0"
 
 [[package]]
 category = "main"
@@ -446,11 +507,13 @@ python-versions = "*"
 version = "0.11.0"
 
 [metadata]
-content-hash = "213fdc6474ec8f2d07cd2dfca4b274494b56bda11875b69c6dc92ba083dcabfa"
+content-hash = "2d9f4319b9dd26996ad048286147bd25e29714ae720350f8bf71ceb04c604e74"
 python-versions = "^3.7"
 
 [metadata.hashes]
 asn1crypto = ["2f1adbb7546ed199e3c90ef23ec95c5cf3585bac7d11fb7eb562a3fe89c64e87", "9d5c20441baf0cb60a4ac34cc447c6c189024b6b4c6cd7877034f4965c464e49"]
+atomicwrites = ["0312ad34fcad8fac3704d441f7b317e50af620823353ec657a53e981f92920c0", "ec9ae8adaae229e4f8446952d204a3e4b5fdd2d099f9be3aaf556120135fb3ee"]
+attrs = ["10cbf6e27dbce8c30807caf056c8eb50917e0eaafe86347671b57254006c3e69", "ca4be454458f9dec299268d472aaa5a11f67a4ff70093396e1ceae9c76cf4bbb"]
 aws-xray-sdk = ["72791618feb22eaff2e628462b0d58f398ce8c1bacfa989b7679817ab1fad60c", "9e7ba8dd08fd2939376c21423376206bff01d0deaea7d7721c6b35921fed1943"]
 boto = ["147758d41ae7240dc989f0039f27da8ca0d53734be0eb869ef16e3adcfa462e8", "ea0d3b40a2d852767be77ca343b58a9e3a4b00d9db440efb8da74b4e58025e5a"]
 boto3 = ["63cd957ba663f5c10ff48ed904575eaa701314f79f18dbc59bd050311cd5f809", "d1338582bc58741f54bd6b43488de6097a82ea45cebed0a3fd936981eadbb3a5"]
@@ -473,12 +536,16 @@ jsondiff = ["2d0437782de9418efa34e694aa59f43d7adb1899bd9a793f063867ddba8f7893"]
 jsonpickle = ["0231d6f7ebc4723169310141352d9c9b7bbbd6f3be110cf634575d2bf2af91f0", "625098cc8e5854b8c23b587aec33bc8e33e0e597636bfaca76152249c78fe5c1"]
 markupsafe = ["048ef924c1623740e70204aa7143ec592504045ae4429b59c30054cb31e3c432", "130f844e7f5bdd8e9f3f42e7102ef1d49b2e6fdf0d7526df3f87281a532d8c8b", "19f637c2ac5ae9da8bfd98cef74d64b7e1bb8a63038a3505cd182c3fac5eb4d9", "1b8a7a87ad1b92bd887568ce54b23565f3fd7018c4180136e1cf412b405a47af", "1c25694ca680b6919de53a4bb3bdd0602beafc63ff001fea2f2fc16ec3a11834", "1f19ef5d3908110e1e891deefb5586aae1b49a7440db952454b4e281b41620cd", "1fa6058938190ebe8290e5cae6c351e14e7bb44505c4a7624555ce57fbbeba0d", "31cbb1359e8c25f9f48e156e59e2eaad51cd5242c05ed18a8de6dbe85184e4b7", "3e835d8841ae7863f64e40e19477f7eb398674da6a47f09871673742531e6f4b", "4e97332c9ce444b0c2c38dd22ddc61c743eb208d916e4265a2a3b575bdccb1d3", "525396ee324ee2da82919f2ee9c9e73b012f23e7640131dd1b53a90206a0f09c", "52b07fbc32032c21ad4ab060fec137b76eb804c4b9a1c7c7dc562549306afad2", "52ccb45e77a1085ec5461cde794e1aa037df79f473cbc69b974e73940655c8d7", "5c3fbebd7de20ce93103cb3183b47671f2885307df4a17a0ad56a1dd51273d36", "5e5851969aea17660e55f6a3be00037a25b96a9b44d2083651812c99d53b14d1", "5edfa27b2d3eefa2210fb2f5d539fbed81722b49f083b2c6566455eb7422fd7e", "7d263e5770efddf465a9e31b78362d84d015cc894ca2c131901a4445eaa61ee1", "83381342bfc22b3c8c06f2dd93a505413888694302de25add756254beee8449c", "857eebb2c1dc60e4219ec8e98dfa19553dae33608237e107db9c6078b1167856", "98e439297f78fca3a6169fd330fbe88d78b3bb72f967ad9961bcac0d7fdd1550", "bf54103892a83c64db58125b3f2a43df6d2cb2d28889f14c78519394feb41492", "d9ac82be533394d341b41d78aca7ed0e0f4ba5a2231602e2f05aa87f25c51672", "e982fe07ede9fada6ff6705af70514a52beb1b2c3d25d4e873e82114cf3c5401", "edce2ea7f3dfc981c4ddc97add8a61381d9642dc3273737e756517cc03e84dd6", "efdc45ef1afc238db84cb4963aa689c0408912a0239b0721cb172b4016eb31d6", "f137c02498f8b935892d5c0172560d7ab54bc45039de8805075e19079c639a9c", "f82e347a72f955b7017a39708a3667f106e6ad4d10b25f237396a7115d8ed5fd", "fb7c206e01ad85ce57feeaaa0bf784b97fa3cad0d4a5737bc5295785f5c613a1"]
 mock = ["5ce3c71c5545b472da17b72268978914d0252980348636840bd34a00b5cc96c1", "b158b6df76edd239b8208d481dc46b6afd45a846b7812ff0ce58971cf5bc8bba"]
+more-itertools = ["38a936c0a6d98a38bcc2d03fdaaedaba9f412879461dd2ceff8d37564d6522e4", "c0a5785b1109a6bd7fac76d6837fd1feca158e54e521ccd2ae8bfe393cc9d4fc", "fe7a7cae1ccb57d33952113ff4fa1bc5f879963600ed74918f1236e212ee50b9"]
 moto = ["129de2e04cb250d9f8b2c722ec152ed1b5426ef179b4ebb03e9ec36e6eb3fcc5", "4df37936ff8d6a4b8229aab347a7b412cd2ca4823ff47bd1362ddfbc6c5e4ecf"]
 pbr = ["a7953f66e1f82e4b061f43096a4bcc058f7d3d41de9b94ac871770e8bdd831a2", "d717573351cfe09f49df61906cd272abaa759b3e91744396b804965ff7bff38b"]
+pluggy = ["8ddc32f03971bfdf900a81961a48ccf2fb677cf7715108f85295c67405798616", "980710797ff6a041e9a73a5787804f848996ecaa6f8a1b1e08224a5894f2074a"]
+py = ["bf92637198836372b520efcba9e020c330123be8ce527e535d185ed4b6f45694", "e76826342cefe3c3d5f7e8ee4316b80d1dd8a300781612ddbc765c17ba25a6c6"]
 pyaml = ["39470e99cfb7a0ef79e593fee626328283cd6d1a9c23c7e30f0d3a6933f3a235", "b96292cc409e0f222b6fecff96afd2e19cfab5d1f2606344907751d42301263a"]
 pycparser = ["a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3"]
 pycryptodome = ["06b779be9736710c109234f28ebef90ff6615c70c335e782d4f6d983c0c66b57", "0cfa2a1d9ec697b8924729e86443d2b8fd8dbad0ca4cd322e9507d8b77fb71a0", "0d6613ccd561eb6ef7029d59a47f58e63d840dcee0ed2eda19dafceaffe1e544", "0f37f03864dc05b70ce11c023dea78f6af4f19adb48651976d512ba4d7210942", "16f38a3d9735054cefaa0a5e272395aab585e7eb585cb1609cbea78e69a8da61", "1a222250e43f3c659b4ebd5df3e11c2f112aab6aef58e38af55ef5678b9f0636", "23df2d665c7f52ddf467d405de355b1ffbd08944442677bb072b33599748e09d", "624de350bc8f346da0f536b1dee6bd19b40c99fb783ba1ed09caceb783904fca", "733729141cf2e0706188f905fec9b27d40dd5a8e5ec232f95b82437e15c9ebf3", "737248b34df3231ba77fad50897a267cc0718a3ecd71b1eb9d92605a2d12d32e", "825af2416abf8be0441c2b632d4a0825ce96033cab36b0ea008a71afc7e6ca17", "8403b5adaabcaf7594331ce99a5eb834d0de5ce8f29d174db3f420b0fc450b77", "861442e3bc8680b47c7c9bfcd34fd9a3683cd179e3e4eaaba13c60af2ce3a8d6", "97e2fa022e2e92afbac4d9bc3c7263f7e6813b01b88398d7eb48dd000cfc81cb", "9f9b9dbabf286e35a6c4a3724fe48fe977acb0005aa6f08318960ac287108c1c", "a94ccb190cf8b1e0352d2b5f8984a44b3da0dfffdce21c4f3a6b8dc84d95e17a", "b9671b3ee8104deabee682f40540d65faf098bccb4d65bdd70eeccd87346856d", "be2403e4b65272516d7b3eeed73de0dbddf9802487c6faf2b202679def520c54", "c02ad68c49d959f724f26a4861deefc4aad25a5e970e40dedeeaf0627140605d", "ca78f78dde52ccd1b4654d8911d9b33015bf3cf54385a664f248a11af7896d44", "ce889584b07174047b554c17df9c48357134c48b517ef7008599e5677919e8d0", "d0d41c7338753e9e12bf685c7b5c0c8d2df070c6af8b7e7dc8fa0ccab20a4c05", "da05447b79754f703e53dae7b381d82234e062b5ca03cb96e64adc887d508dfd", "db53ea88fb38e3e054c2cb7d765b5dc4cea411b19be336e748b9b29f1b696ee5", "e7eb9ffaf5757f76c25761fc6fce2aaecbbaf145c0743bd146d86ba038899bf1", "ee5a6bba5a7517676a6afdf98ae4f65440132ed4a736c7c1fe762b464365a900", "f162644a8618c85cc29a3b998cea76c790220677461c9b6fffcb8fc7b0ae4335", "f6ab3c50b360160c38cb833f8855a42b9aa05ca30366a99bece8f161fa0c622b"]
 pypiwin32 = ["67adf399debc1d5d14dffc1ab5acacb800da569754fafdc576b2a039485aa775", "71be40c1fbd28594214ecaecb58e7aa8b708eabfa0125c8a109ebd51edbd776a"]
+pytest = ["41568ea7ecb4a68d7f63837cf65b92ce8d0105e43196ff2b26622995bb3dc4b2", "c3c573a29d7c9547fb90217ece8a8843aa0c1328a797e200290dc3d0b4b823be"]
 python-dateutil = ["063df5763652e21de43de7d9e00ccf239f953a832941e37be541614732cdfc93", "88f9287c0174266bb0d8cedd395cfba9c58e87e5ad86b2ce58859bc11be3cf02"]
 python-jose = ["391f860dbe274223d73dd87de25e4117bf09e8fe5f93a417663b1f2d7b591165", "3b35cdb0e55a88581ff6d3f12de753aa459e940b50fe7ca5aa25149bc94cb37b"]
 pytz = ["32b0891edff07e28efe91284ed9c31e123d84bea3fd98e1f72be2508f43ef8d9", "d5f05e487007e29e03409f9398d074e158d920d36eb82eaf66fb1136b0c5374c"]
