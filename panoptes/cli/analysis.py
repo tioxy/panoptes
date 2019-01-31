@@ -13,11 +13,11 @@ import panoptes
 )
 @click.option(
     '-f', '--file',
-    'file',
+    'analysis_file',
     help='Path to analysis file generated from Panoptes',
     metavar='<path>',
 )
-def analysis_view_command(file):
+def analysis_view_command(analysis_file):
     """
     This function is called when the user types
     "panoptes analysis view"
@@ -25,7 +25,7 @@ def analysis_view_command(file):
     human_outputs = {
         "aws": panoptes.aws.output.print_human,
     }
-    analysis = panoptes.generic.helpers.parse_analysis_file(file)
+    analysis = panoptes.generic.helpers.parse_analysis_file(analysis_file)
     print(human_outputs[analysis['Metadata']['CloudProvider']['Name']](analysis))
 
 

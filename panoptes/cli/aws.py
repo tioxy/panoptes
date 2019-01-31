@@ -1,4 +1,5 @@
 """ Panoptes - CLI - AWS
+
 Responsible for organizing commands from Panoptes AWS CLI
 """
 
@@ -43,7 +44,13 @@ AWS_AVAILABLE_OUTPUT_OPTIONS = [
     help='Path to whitelist with declared safe IPs and CIDR',
     metavar='<path>',
 )
-def aws_analyze_command(region, profile, output, whitelist_path):
+@click.option(
+    '-f', '--file',
+    'analysis_path',
+    help='Path to save the analysis file from Panoptes',
+    metavar='<path>',
+)
+def aws_analyze_command(region, profile, output, whitelist_path, analysis_path):
     """
     This function is called when the user types
     "panoptes aws analyze"
@@ -72,6 +79,23 @@ def aws_analyze_command(region, profile, output, whitelist_path):
             whitelist=whitelist,
         )
         print(aws_output_options.get(output)(analysis=analysis))
+
+    if analysis_path:
+        unsupported_file_outputs = [
+            "human",
+        ]
+        if output in unsupported_file_outputs:
+            print(
+                panoptes.generic.output.generate_warning_message(
+                    f"Your analysis file will not be created as '{output}' output is not supported."
+                )
+            )
+        else:
+            panoptes.generic.helpers.write_analysis_file(
+                analysis=analysis,
+                analysis_path=analysis_path,
+                analysis_output=output,
+            )
 
 
 if __name__ == "__main__":
