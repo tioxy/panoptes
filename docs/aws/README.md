@@ -7,6 +7,7 @@
 - [Commands](README.md#commands)
     - [panoptesctl aws analyze](README.md#panoptesctl-aws-analyze)
     - [panoptesctl version](README.md#panoptesctl-version)
+    - [panoptesctl analysis view](README.md#panoptesctl-aws-analyze)
 - [Integration for Developers](README.md#integration-for-developers)
 
 
@@ -76,6 +77,10 @@ Generate the analysis output
 
 
 - **```--whitelist```** : Path to [whitelist](../samples/whitelist_example.txt) with declared safe IPs and CIDR
+
+
+- **```--file```** : Path to save the analysis file from Panoptes
+
 
 #### Requirements
 You need specific IAM permissions to analyze without headaches. There are some ways to give Panoptes permission to analyze content:
@@ -151,7 +156,6 @@ panoptesctl aws analyze --region us-east-1 --profile my-aws-profile --output jso
 ## [panoptesctl version](#panoptesctl-version)
 Show Panoptes version
 
-
 #### Usage
 ```sh
 panoptesctl version
@@ -161,6 +165,56 @@ panoptesctl version
 ```sh
 0.4.0
 ```
+
+## [panoptesctl analysis view](#panoptesctl-analysis-view)
+Print analysis in human output from a previously generated analysis file. 
+Make sure that the analysis file has the right file extension.
+
+##### Options
+- **```--file```** : Path to analysis file generated from Panoptes
+
+#### Usage
+```sh
+panoptesctl analysis view --file my-analysis-file.json
+```
+
+#### Output
+```sh
+=============================================================
+                      PANOPTES Analysis                      
+=============================================================
+
+
+
+Cloud provider  ->  AWS
+Authentication  ->  arn:aws:iam::accountid:user/youruser
+Started at      ->  Jan 01 2018, 12:40:30
+Finished at     ->  Jan 01 2018, 12:40:20
+
+
+
+01. UNUSED SECURITY GROUPS
+sg-09e97bab78ee5f82a   k8s-master-nodes
+sg-0fb0837417362d743   k8s-worker-nodes
+
+
+WARNING: 2 security groups found not being used
+
+
+
+02. SECURITY GROUPS WITH UNSAFE INGRESS RULES
+sg-060c270f54658459f   all-traffic
+    All   All   0.0.0.0/0
+
+sg-7a211531   http-public
+    TCP   80   123.123.123.123/32
+
+
+WARNING: 1 rules found with unknown IPs
+ALERT: 1 rules found with public IPs or all traffic enabled
+```
+
+
 
 <br>
 
