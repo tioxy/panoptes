@@ -1,4 +1,5 @@
 """ Panoptes - CLI - Analysis
+
 Responsible for organizing commands from Panoptes Analysis CLI
 """
 

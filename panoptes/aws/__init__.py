@@ -1,4 +1,5 @@
 """ Panoptes - AWS
+
 Responsible to import analysis functions from AWS.
 """
 

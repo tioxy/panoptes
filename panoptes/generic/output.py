@@ -1,4 +1,5 @@
 """ Panoptes - Generic - Output
+
 Responsible for generic outputs used through Panoptes module
 """
 

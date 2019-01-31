@@ -1,4 +1,5 @@
 """ Panoptes - CLI
+
 Responsible for organizing the CLI created by Click
 """
 
