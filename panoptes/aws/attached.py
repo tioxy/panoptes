@@ -15,9 +15,10 @@ def list_all_attached_secgroups(session: boto3.session.Session) -> list:
     """
     all_attached_groups = []
     boto_clients = panoptes.aws.authentication.get_boto_clients(session)
-    
+
     services_with_security_groups = [
         (list_ec2_attached_secgroups, boto_clients['ec2']),
+        (list_eni_attached_secgroups, boto_clients['ec2']),
         (list_rds_attached_secgroups, boto_clients['rds']),
         (list_elb_attached_secgroups, boto_clients['elb']),
         (list_elbv2_attached_secgroups, boto_clients['elbv2']),
@@ -49,6 +50,32 @@ def list_ec2_attached_secgroups(ec2) -> list:
                     security_group['GroupId']
                 )
     return ec2_attached_groups
+
+
+def list_eni_attached_secgroups(ec2) -> list:
+    """
+    List security groups attached to Elastic Network Interfaces
+    """
+    network_interfaces = []
+    next_token = None
+    has_next = True
+    while has_next:
+        args = {'MaxResults': 1000}
+        if next_token is not None:
+            args['NextToken'] = next_token
+
+        network_interfaces_result = ec2.describe_network_interfaces(**args)
+
+        network_interfaces += network_interfaces_result['NetworkInterfaces']
+
+        next_token = network_interfaces_result.get('NextToken')
+        has_next = next_token is not None
+
+    eni_attached_groups = [security_group['GroupId']
+                           for network_interface in network_interfaces
+                           for security_group in network_interface['Groups']]
+
+    return eni_attached_groups
 
 
 def list_rds_attached_secgroups(rds) -> list:
