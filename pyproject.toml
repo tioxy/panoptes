@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "panoptes"
+version = "0.5.0"
+description = "The multi cloud security group analyzer"
+authors = ["Gabriel Tiossi <gabrieltiossi@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/tioxy/panoptes"
+repository = "https://github.com/tioxy/panoptes"
+documentation = "https://github.com/tioxy/panoptes/tree/master/docs"
+keywords = [
+    "panoptes", "aws", "security", "analysis", "cloud"
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+boto3 = "^1.14"
+click = "^7.1"
+colorama = "^0.4.3"
+PyYAML = "^5.3"
+Jinja2 = "^2.11"
+
+[tool.poetry.dev-dependencies]
+moto = "^1.3"
+pytest = "^6.0"
+
+[tool.poetry.scripts]
+panoptesctl = "panoptes.panoptesctl:main"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
